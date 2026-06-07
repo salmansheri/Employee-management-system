@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Log Directory and Filename -->
+    <property name="LOG_DIR" value="logs" />
+    <property name="LOG_FILE" value="ems.log" />
+
+    <!-- Console Appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Rolling File Appender -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${LOG_FILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- Daily rollover with path matching format -->
+            <fileNamePattern>${LOG_DIR}/archived/ems-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <!-- Each file max size 10MB -->
+            <maxFileSize>10MB</maxFileSize>
+            <!-- Keep 30 days history -->
+            <maxHistory>30</maxHistory>
+            <!-- Total cap of all logs combined 3GB -->
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Log Levels Configuration -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </root>
+
+    <!-- Specific package logger levels -->
+    <logger name="dev.ems.backend" level="DEBUG" />
+</configuration>
