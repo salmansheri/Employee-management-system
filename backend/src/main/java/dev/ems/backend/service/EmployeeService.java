@@ -1,5 +1,6 @@
 package dev.ems.backend.service;
 
+import dev.ems.backend.dto.ChangePasswordRequest;
 import dev.ems.backend.dto.RegisterRequest;
 import dev.ems.backend.model.Department;
 import dev.ems.backend.model.Employee;
@@ -161,6 +162,18 @@ public class EmployeeService {
         Employee employee = getEmployeeById(id);
         // Soft delete / termination is standard in HR systems
         employee.setStatus(EmployeeStatus.TERMINATED);
+        employeeRepository.save(employee);
+    }
+
+    @Transactional
+    public void changePassword(String email, ChangePasswordRequest request) {
+        Employee employee = getEmployeeByEmail(email);
+        
+        if (!passwordEncoder.matches(request.getCurrentPassword(), employee.getPassword())) {
+            throw new IllegalArgumentException("Incorrect current password");
+        }
+        
+        employee.setPassword(passwordEncoder.encode(request.getNewPassword()));
         employeeRepository.save(employee);
     }
 }

@@ -26,7 +26,25 @@ import { RequestListItem } from '../components/RequestListItem';
 import { ApprovalItem } from '../components/ApprovalItem';
 import { DatePicker } from '../components/DatePicker';
 import { FormItem, FormLabel, FormControl, FormMessage } from '../components/ui/form';
+import { z } from 'zod';
 import { toast } from 'sonner';
+
+const leaveSchema = z.object({
+  startDate: z.string().min(1, 'Start date is required'),
+  endDate: z.string().min(1, 'End date is required'),
+  leaveType: z.enum(['SICK', 'CASUAL', 'ANNUAL', 'UNPAID']),
+  reason: z.string().min(5, 'Please provide a more descriptive reason')
+});
+
+const wfhSchema = z.object({
+  startDate: z.string().min(1, 'Start date is required'),
+  endDate: z.string().min(1, 'End date is required'),
+  reason: z.string().min(5, 'Please provide a more descriptive reason')
+});
+
+const rejectionSchema = z.object({
+  reason: z.string().min(1, 'Rejection reason is required')
+});
 
 export const Route = createFileRoute('/leaves')({
   component: LeavesComponent,
@@ -71,6 +89,9 @@ function LeavesComponent() {
       leaveType: 'CASUAL' as 'SICK' | 'CASUAL' | 'ANNUAL' | 'UNPAID',
       reason: ''
     },
+    validators: {
+      onChange: leaveSchema,
+    },
     onSubmit: async ({ value }) => {
       setFormError(null);
       setFormSuccess(null);
@@ -111,6 +132,9 @@ function LeavesComponent() {
       endDate: '',
       reason: ''
     },
+    validators: {
+      onChange: wfhSchema,
+    },
     onSubmit: async ({ value }) => {
       setFormError(null);
       setFormSuccess(null);
@@ -148,6 +172,9 @@ function LeavesComponent() {
   const rejectionForm = useForm({
     defaultValues: {
       reason: ''
+    },
+    validators: {
+      onChange: rejectionSchema,
     },
     onSubmit: async ({ value }) => {
       if (!rejectionTarget) return;
@@ -378,12 +405,8 @@ function LeavesComponent() {
                 className="space-y-4"
               >
                 <div className="grid grid-cols-2 gap-4">
-                  <leaveForm.Field
-                    name="startDate"
-                    validators={{
-                      onChange: ({ value }: { value: string }) => !value ? 'Start date is required' : undefined
-                    }}
-                    children={(field: any) => (
+                  <leaveForm.Field name="startDate">
+                    {(field: any) => (
                       <FormItem>
                         <FormLabel>Start Date</FormLabel>
                         <FormControl>
@@ -396,12 +419,8 @@ function LeavesComponent() {
                       </FormItem>
                     )}
                   />
-                  <leaveForm.Field
-                    name="endDate"
-                    validators={{
-                      onChange: ({ value }: { value: string }) => !value ? 'End date is required' : undefined
-                    }}
-                    children={(field: any) => (
+                  <leaveForm.Field name="endDate">
+                    {(field: any) => (
                       <FormItem>
                         <FormLabel>End Date</FormLabel>
                         <FormControl>
@@ -417,9 +436,8 @@ function LeavesComponent() {
                   />
                 </div>
 
-                <leaveForm.Field
-                  name="leaveType"
-                  children={(field: any) => (
+                <leaveForm.Field name="leaveType">
+                  {(field: any) => (
                     <FormItem>
                       <FormLabel>Leave Type</FormLabel>
                       <FormControl>
@@ -439,13 +457,8 @@ function LeavesComponent() {
                   )}
                 />
 
-                <leaveForm.Field
-                  name="reason"
-                  validators={{
-                    onChange: ({ value }: { value: string }) => 
-                      !value ? 'Reason is required' : value.length < 5 ? 'Please provide a more descriptive reason' : undefined
-                  }}
-                  children={(field: any) => (
+                <leaveForm.Field name="reason">
+                  {(field: any) => (
                     <FormItem>
                       <FormLabel>Application Reason</FormLabel>
                       <FormControl>
@@ -488,12 +501,8 @@ function LeavesComponent() {
                 className="space-y-4"
               >
                 <div className="grid grid-cols-2 gap-4">
-                  <wfhForm.Field
-                    name="startDate"
-                    validators={{
-                      onChange: ({ value }: { value: string }) => !value ? 'Start date is required' : undefined
-                    }}
-                    children={(field: any) => (
+                  <wfhForm.Field name="startDate">
+                    {(field: any) => (
                       <FormItem>
                         <FormLabel>Start Date</FormLabel>
                         <FormControl>
@@ -506,12 +515,8 @@ function LeavesComponent() {
                       </FormItem>
                     )}
                   />
-                  <wfhForm.Field
-                    name="endDate"
-                    validators={{
-                      onChange: ({ value }: { value: string }) => !value ? 'End date is required' : undefined
-                    }}
-                    children={(field: any) => (
+                  <wfhForm.Field name="endDate">
+                    {(field: any) => (
                       <FormItem>
                         <FormLabel>End Date</FormLabel>
                         <FormControl>
@@ -527,13 +532,8 @@ function LeavesComponent() {
                   />
                 </div>
 
-                <wfhForm.Field
-                  name="reason"
-                  validators={{
-                    onChange: ({ value }: { value: string }) => 
-                      !value ? 'Reason is required' : value.length < 5 ? 'Please provide a more descriptive reason' : undefined
-                  }}
-                  children={(field: any) => (
+                <wfhForm.Field name="reason">
+                  {(field: any) => (
                     <FormItem>
                       <FormLabel>Application Reason</FormLabel>
                       <FormControl>
@@ -665,12 +665,8 @@ function LeavesComponent() {
                 }} 
                 className="space-y-4"
               >
-                <rejectionForm.Field
-                  name="reason"
-                  validators={{
-                    onChange: ({ value }: { value: string }) => !value ? 'Rejection reason is required' : undefined
-                  }}
-                  children={(field: any) => (
+                <rejectionForm.Field name="reason">
+                  {(field: any) => (
                     <FormItem>
                       <FormLabel>Provide rejection reason</FormLabel>
                       <FormControl>

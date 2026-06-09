@@ -4,6 +4,7 @@ import dev.ems.backend.dto.LoginRequest;
 import dev.ems.backend.dto.LoginResponse;
 import dev.ems.backend.dto.RegisterRequest;
 import dev.ems.backend.dto.EmployeeDto;
+import dev.ems.backend.dto.ChangePasswordRequest;
 import dev.ems.backend.mapper.EmployeeMapper;
 import dev.ems.backend.model.Employee;
 import dev.ems.backend.security.JwtUtils;
@@ -113,5 +114,19 @@ public class AuthController {
             return ResponseEntity.status(401).build();
         }
         return ResponseEntity.ok(employeeMapper.toDto(currentEmployee));
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePasswordRequest request, @AuthenticationPrincipal Employee currentEmployee) {
+        if (currentEmployee == null) {
+            return ResponseEntity.status(401).build();
+        }
+        
+        try {
+            employeeService.changePassword(currentEmployee.getEmail(), request);
+            return ResponseEntity.ok("Password changed successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

@@ -24,6 +24,15 @@ import { motion, AnimatePresence } from 'motion/react';
 import { KanbanColumn } from '../components/KanbanColumn';
 import { DatePicker } from '../components/DatePicker';
 import { FormItem, FormLabel, FormControl, FormMessage } from '../components/ui/form';
+import { z } from 'zod';
+
+const createTaskSchema = z.object({
+  title: z.string().min(1, 'Task title is required'),
+  description: z.string().optional(),
+  assignedToId: z.string().min(1, 'Assignee is required'),
+  priority: z.enum(['LOW', 'MEDIUM', 'HIGH']),
+  dueDate: z.string().optional()
+});
 
 export const Route = createFileRoute('/tasks')({
   component: TasksComponent,
@@ -62,6 +71,9 @@ function TasksComponent() {
       assignedToId: '',
       priority: 'MEDIUM' as 'LOW' | 'MEDIUM' | 'HIGH',
       dueDate: ''
+    },
+    validators: {
+      onChange: createTaskSchema,
     },
     onSubmit: async ({ value }) => {
       setFormError(null);
@@ -382,12 +394,8 @@ function TasksComponent() {
                 }} 
                 className="space-y-4"
               >
-                <createTaskForm.Field
-                  name="title"
-                  validators={{
-                    onChange: ({ value }: { value: string }) => !value ? 'Task title is required' : undefined
-                  }}
-                  children={(field: any) => (
+                <createTaskForm.Field name="title">
+                  {(field: any) => (
                     <FormItem>
                       <FormLabel>Task Title</FormLabel>
                       <FormControl>
@@ -408,9 +416,8 @@ function TasksComponent() {
                   )}
                 />
 
-                <createTaskForm.Field
-                  name="description"
-                  children={(field: any) => (
+                <createTaskForm.Field name="description">
+                  {(field: any) => (
                     <FormItem>
                       <FormLabel>Description</FormLabel>
                       <FormControl>
@@ -429,12 +436,8 @@ function TasksComponent() {
                   )}
                 />
 
-                <createTaskForm.Field
-                  name="assignedToId"
-                  validators={{
-                    onChange: ({ value }: { value: string }) => !value ? 'Assignee is required' : undefined
-                  }}
-                  children={(field: any) => (
+                <createTaskForm.Field name="assignedToId">
+                  {(field: any) => (
                     <FormItem>
                       <FormLabel>Assign To (Employee)</FormLabel>
                       <FormControl>
@@ -461,9 +464,8 @@ function TasksComponent() {
                 />
 
                 <div className="grid grid-cols-2 gap-4">
-                  <createTaskForm.Field
-                    name="priority"
-                    children={(field: any) => (
+                  <createTaskForm.Field name="priority">
+                    {(field: any) => (
                       <FormItem>
                         <FormLabel>Priority</FormLabel>
                         <FormControl>
@@ -484,9 +486,8 @@ function TasksComponent() {
                       </FormItem>
                     )}
                   />
-                  <createTaskForm.Field
-                    name="dueDate"
-                    children={(field: any) => (
+                  <createTaskForm.Field name="dueDate">
+                    {(field: any) => (
                       <FormItem>
                         <FormLabel>Due Date</FormLabel>
                         <FormControl>

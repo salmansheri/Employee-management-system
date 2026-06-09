@@ -14,6 +14,7 @@ import {
   Shield
 } from 'lucide-react';
 import { motion } from 'motion/react';
+import { ChangePasswordDialog } from './ChangePasswordDialog';
 
 export function Sidebar() {
   const navigate = useNavigate();
@@ -119,6 +120,8 @@ export function Sidebar() {
             </motion.div>
           )}
         </div>
+
+        <ChangePasswordDialog collapsed={sidebarCollapsed} />
 
         <button
           onClick={handleLogout}

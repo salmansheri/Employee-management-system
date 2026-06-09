@@ -1,11 +1,17 @@
 import { useState, useEffect } from 'react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useForm } from '@tanstack/react-form';
+import { z } from 'zod';
 import { useAuthStore } from '../store/useAuthStore';
 import { useLoginMutation } from '../hooks/useAuth';
 import { Mail, Lock, Eye, EyeOff, Loader2, Building2 } from 'lucide-react';
 import { FormItem, FormLabel, FormControl, FormMessage } from '../components/ui/form';
 import { toast } from 'sonner';
+
+const loginSchema = z.object({
+  email: z.string().email('Invalid email address').min(1, 'Email is required'),
+  password: z.string().min(1, 'Password is required').min(6, 'Password must be at least 6 characters')
+});
 
 export const Route = createFileRoute('/login')({
   component: LoginComponent,
@@ -30,6 +36,9 @@ function LoginComponent() {
     defaultValues: {
       email: '',
       password: '',
+    },
+    validators: {
+      onChange: loginSchema,
     },
     onSubmit: async ({ value }) => {
       if (!value.email || !value.password) {
@@ -93,13 +102,8 @@ function LoginComponent() {
               </div>
             )}
 
-            <form.Field
-              name="email"
-              validators={{
-                onChange: ({ value }: { value: string }) => 
-                  !value ? 'Email is required' : !/^\S+@\S+$/i.test(value) ? 'Invalid email address' : undefined
-              }}
-              children={(field) => (
+            <form.Field name="email">
+              {(field) => (
                 <FormItem>
                   <FormLabel>Email Address</FormLabel>
                   <FormControl>
@@ -122,15 +126,10 @@ function LoginComponent() {
                   <FormMessage>{field.state.meta.errors}</FormMessage>
                 </FormItem>
               )}
-            />
+            </form.Field>
 
-            <form.Field
-              name="password"
-              validators={{
-                onChange: ({ value }: { value: string }) => 
-                  !value ? 'Password is required' : value.length < 6 ? 'Password must be at least 6 characters' : undefined
-              }}
-              children={(field) => (
+            <form.Field name="password">
+              {(field) => (
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
@@ -160,7 +159,7 @@ function LoginComponent() {
                   <FormMessage>{field.state.meta.errors}</FormMessage>
                 </FormItem>
               )}
-            />
+            </form.Field>
 
             <div>
               <button

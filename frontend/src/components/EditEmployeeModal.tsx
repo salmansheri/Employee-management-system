@@ -3,7 +3,22 @@ import { useForm } from '@tanstack/react-form';
 import { X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FormItem, FormLabel, FormControl, FormMessage } from './ui/form';
+import { z } from 'zod';
 import type { DepartmentDto, EmployeeDto } from '../client/types.gen';
+
+const editEmployeeSchema = z.object({
+  id: z.string().optional(),
+  firstName: z.string().min(1, 'First Name is required'),
+  lastName: z.string().min(1, 'Last Name is required'),
+  email: z.string().email('Invalid email address').min(1, 'Email is required'),
+  phone: z.string().optional().nullable(),
+  jobTitle: z.string().optional().nullable(),
+  departmentId: z.string().optional().nullable(),
+  managerId: z.string().optional().nullable(),
+  salary: z.number().optional().nullable(),
+  role: z.enum(['ROLE_EMPLOYEE', 'ROLE_MANAGER', 'ROLE_ADMIN']).optional(),
+  status: z.enum(['ACTIVE', 'INACTIVE', 'TERMINATED', 'ON_LEAVE']).optional()
+});
 
 interface EditEmployeeModalProps {
   isOpen: boolean;
@@ -42,6 +57,9 @@ export function EditEmployeeModal({
       salary: employee?.salary || 50000,
       role: (employee?.role || 'ROLE_EMPLOYEE') as 'ROLE_EMPLOYEE' | 'ROLE_MANAGER' | 'ROLE_ADMIN',
       status: (employee?.status || 'ACTIVE') as 'ACTIVE' | 'INACTIVE' | 'TERMINATED' | 'ON_LEAVE'
+    },
+    validators: {
+      onChange: editEmployeeSchema,
     },
     onSubmit: async ({ value }) => {
       setFormError(null);
@@ -92,12 +110,8 @@ export function EditEmployeeModal({
               className="space-y-4 max-h-[70vh] overflow-y-auto pr-1"
             >
               <div className="grid grid-cols-2 gap-4">
-                <form.Field
-                  name="firstName"
-                  validators={{
-                    onChange: ({ value }: { value: string }) => !value ? 'First Name is required' : undefined
-                  }}
-                  children={(field) => (
+                <form.Field name="firstName">
+                  {(field) => (
                     <FormItem>
                       <FormLabel>First Name</FormLabel>
                       <FormControl>
@@ -116,12 +130,8 @@ export function EditEmployeeModal({
                     </FormItem>
                   )}
                 />
-                <form.Field
-                  name="lastName"
-                  validators={{
-                    onChange: ({ value }: { value: string }) => !value ? 'Last Name is required' : undefined
-                  }}
-                  children={(field) => (
+                <form.Field name="lastName">
+                  {(field) => (
                     <FormItem>
                       <FormLabel>Last Name</FormLabel>
                       <FormControl>
@@ -142,13 +152,8 @@ export function EditEmployeeModal({
                 />
               </div>
 
-              <form.Field
-                name="email"
-                validators={{
-                  onChange: ({ value }: { value: string }) => 
-                    !value ? 'Email is required' : !/^\S+@\S+$/i.test(value) ? 'Invalid email address' : undefined
-                }}
-                children={(field) => (
+              <form.Field name="email">
+                {(field) => (
                   <FormItem>
                     <FormLabel>Email Address</FormLabel>
                     <FormControl>

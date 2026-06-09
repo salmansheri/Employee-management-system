@@ -1,9 +1,31 @@
 import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
+import { z } from 'zod';
 import { X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FormItem, FormLabel, FormControl, FormMessage } from './ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { toast } from 'sonner';
 import type { DepartmentDto, EmployeeDto, RegisterRequest } from '../client/types.gen';
+
+const employeeSchema = z.object({
+  firstName: z.string().min(1, 'First Name is required'),
+  lastName: z.string().min(1, 'Last Name is required'),
+  email: z.string().email('Invalid email address').min(1, 'Email is required'),
+  password: z.string().min(1, 'Password is required').min(6, 'Password must be at least 6 characters'),
+  phone: z.string().optional(),
+  jobTitle: z.string().optional(),
+  departmentCode: z.string().optional(),
+  managerId: z.string().optional(),
+  salary: z.number().optional(),
+  role: z.enum(['ROLE_EMPLOYEE', 'ROLE_MANAGER', 'ROLE_ADMIN']).optional()
+});
 
 interface CreateEmployeeModalProps {
   isOpen: boolean;
@@ -37,6 +59,9 @@ export function CreateEmployeeModal({
       managerId: '',
       salary: 50000,
       role: 'ROLE_EMPLOYEE' as 'ROLE_EMPLOYEE' | 'ROLE_MANAGER' | 'ROLE_ADMIN'
+    },
+    validators: {
+      onChange: employeeSchema,
     },
     onSubmit: async ({ value }) => {
       setFormError(null);
@@ -87,12 +112,8 @@ export function CreateEmployeeModal({
               className="space-y-4 max-h-[70vh] overflow-y-auto pr-1"
             >
               <div className="grid grid-cols-2 gap-4">
-                <form.Field
-                  name="firstName"
-                  validators={{
-                    onChange: ({ value }: { value: string }) => !value ? 'First Name is required' : undefined
-                  }}
-                  children={(field) => (
+                <form.Field name="firstName">
+                  {(field) => (
                     <FormItem>
                       <FormLabel>First Name</FormLabel>
                       <FormControl>
@@ -111,12 +132,8 @@ export function CreateEmployeeModal({
                     </FormItem>
                   )}
                 />
-                <form.Field
-                  name="lastName"
-                  validators={{
-                    onChange: ({ value }: { value: string }) => !value ? 'Last Name is required' : undefined
-                  }}
-                  children={(field) => (
+                <form.Field name="lastName">
+                  {(field) => (
                     <FormItem>
                       <FormLabel>Last Name</FormLabel>
                       <FormControl>
@@ -137,13 +154,8 @@ export function CreateEmployeeModal({
                 />
               </div>
 
-              <form.Field
-                name="email"
-                validators={{
-                  onChange: ({ value }: { value: string }) => 
-                    !value ? 'Email is required' : !/^\S+@\S+$/i.test(value) ? 'Invalid email address' : undefined
-                }}
-                children={(field) => (
+              <form.Field name="email">
+                {(field) => (
                   <FormItem>
                     <FormLabel>Email Address</FormLabel>
                     <FormControl>
@@ -163,13 +175,8 @@ export function CreateEmployeeModal({
                 )}
               />
 
-              <form.Field
-                name="password"
-                validators={{
-                  onChange: ({ value }: { value: string }) => 
-                    !value ? 'Password is required' : value.length < 6 ? 'Password must be at least 6 characters' : undefined
-                }}
-                children={(field) => (
+              <form.Field name="password">
+                {(field) => (
                   <FormItem>
                     <FormLabel>Initial Password</FormLabel>
                     <FormControl>
@@ -190,9 +197,8 @@ export function CreateEmployeeModal({
               />
 
               <div className="grid grid-cols-2 gap-4">
-                <form.Field
-                  name="phone"
-                  children={(field) => (
+                <form.Field name="phone">
+                  {(field) => (
                     <FormItem>
                       <FormLabel>Phone Number</FormLabel>
                       <FormControl>
@@ -210,9 +216,8 @@ export function CreateEmployeeModal({
                     </FormItem>
                   )}
                 />
-                <form.Field
-                  name="jobTitle"
-                  children={(field) => (
+                <form.Field name="jobTitle">
+                  {(field) => (
                     <FormItem>
                       <FormLabel>Job Title</FormLabel>
                       <FormControl>
@@ -233,9 +238,8 @@ export function CreateEmployeeModal({
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <form.Field
-                  name="departmentCode"
-                  children={(field) => (
+                <form.Field name="departmentCode">
+                  {(field) => (
                     <FormItem>
                       <FormLabel>Department Code</FormLabel>
                       <FormControl>
@@ -309,9 +313,8 @@ export function CreateEmployeeModal({
                     </FormItem>
                   )}
                 />
-                <form.Field
-                  name="managerId"
-                  children={(field) => (
+                <form.Field name="managerId">
+                  {(field) => (
                     <FormItem>
                       <FormLabel>Reports To (Manager)</FormLabel>
                       <FormControl>

@@ -1654,3 +1654,46 @@ Identify and stop the process that's listening on port 8080 or configure this ap
 2026-06-09 07:34:25.957 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
 2026-06-09 07:34:25.962 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
 2026-06-09 07:34:25.975 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-06-09 20:26:05.340 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.0.1.Final
+2026-06-09 20:26:05.496 [main] INFO  dev.ems.backend.BackendApplication - Starting BackendApplication using Java 26.0.1 with PID 16452 (D:\Employee-management-system\backend\target\classes started by Salman.s in D:\Employee-management-system\backend)
+2026-06-09 20:26:05.497 [main] DEBUG dev.ems.backend.BackendApplication - Running with Spring Boot v4.0.6, Spring v7.0.7
+2026-06-09 20:26:05.498 [main] INFO  dev.ems.backend.BackendApplication - No active profile set, falling back to 1 default profile: "default"
+2026-06-09 20:26:05.717 [main] INFO  o.s.b.d.c.l.DockerComposeLifecycleManager - Using Docker Compose file D:\Employee-management-system\backend\compose.yaml
+2026-06-09 20:26:07.449 [main] ERROR o.s.boot.SpringApplication - Application run failed
+org.springframework.boot.docker.compose.core.ProcessExitException: 'docker version --format {{.Client.Version}}' failed with exit code 1.
+
+Stdout:
+29.3.1
+
+
+Stderr:
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+
+	at org.springframework.boot.docker.compose.core.ProcessRunner.run(ProcessRunner.java:98)
+	at org.springframework.boot.docker.compose.core.ProcessRunner.run(ProcessRunner.java:76)
+	at org.springframework.boot.docker.compose.core.DockerCli$DockerCommands.getDockerCommand(DockerCli.java:147)
+	at org.springframework.boot.docker.compose.core.DockerCli$DockerCommands.<init>(DockerCli.java:141)
+	at org.springframework.boot.docker.compose.core.DockerCli.lambda$new$0(DockerCli.java:67)
+	at java.base/java.util.HashMap.computeIfAbsent(HashMap.java:1229)
+	at org.springframework.boot.docker.compose.core.DockerCli.<init>(DockerCli.java:66)
+	at org.springframework.boot.docker.compose.core.DockerCompose.get(DockerCompose.java:147)
+	at org.springframework.boot.docker.compose.lifecycle.DockerComposeLifecycleManager.getDockerCompose(DockerComposeLifecycleManager.java:166)
+	at org.springframework.boot.docker.compose.lifecycle.DockerComposeLifecycleManager.start(DockerComposeLifecycleManager.java:114)
+	at org.springframework.boot.docker.compose.lifecycle.DockerComposeListener.onApplicationEvent(DockerComposeListener.java:53)
+	at org.springframework.boot.docker.compose.lifecycle.DockerComposeListener.onApplicationEvent(DockerComposeListener.java:35)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:180)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:173)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:151)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:133)
+	at org.springframework.boot.context.event.EventPublishingRunListener.multicastInitialEvent(EventPublishingRunListener.java:137)
+	at org.springframework.boot.context.event.EventPublishingRunListener.contextLoaded(EventPublishingRunListener.java:99)
+	at org.springframework.boot.SpringApplicationRunListeners.lambda$contextLoaded$0(SpringApplicationRunListeners.java:74)
+	at java.base/java.util.ImmutableCollections$List12.forEach(ImmutableCollections.java:680)
+	at org.springframework.boot.SpringApplicationRunListeners.doWithListeners(SpringApplicationRunListeners.java:123)
+	at org.springframework.boot.SpringApplicationRunListeners.doWithListeners(SpringApplicationRunListeners.java:117)
+	at org.springframework.boot.SpringApplicationRunListeners.contextLoaded(SpringApplicationRunListeners.java:74)
+	at org.springframework.boot.SpringApplication.prepareContext(SpringApplication.java:418)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:320)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1365)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1354)
+	at dev.ems.backend.BackendApplication.main(BackendApplication.java:15)
