@@ -1,26 +1,53 @@
+import { useState } from 'react';
+import { useForm } from '@tanstack/react-form';
 import { X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FormItem, FormLabel, FormControl, FormMessage } from './ui/form';
+import type { DepartmentDto, EmployeeDto, RegisterRequest } from '../client/types.gen';
 
 interface CreateEmployeeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  form: any;
-  formError: string | null;
+  departments: DepartmentDto[];
+  managersList: EmployeeDto[];
+  onSubmit: (values: RegisterRequest) => Promise<void>;
   formLoading: boolean;
-  departments: any[];
-  managersList: any[];
 }
 
 export function CreateEmployeeModal({
   isOpen,
   onClose,
-  form,
-  formError,
-  formLoading,
   departments,
   managersList,
+  onSubmit,
+  formLoading,
 }: CreateEmployeeModalProps) {
+  const [formError, setFormError] = useState<string | null>(null);
+
+  // Form hook initialized internally so it resets cleanly when the modal mounts/unmounts
+  const form = useForm({
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      phone: '',
+      jobTitle: '',
+      departmentCode: departments?.[0]?.code || 'ENG',
+      managerId: '',
+      salary: 50000,
+      role: 'ROLE_EMPLOYEE' as 'ROLE_EMPLOYEE' | 'ROLE_MANAGER' | 'ROLE_ADMIN'
+    },
+    onSubmit: async ({ value }) => {
+      setFormError(null);
+      try {
+        await onSubmit(value);
+      } catch (err: any) {
+        setFormError(err.response?.data?.message || err.message || 'Error registering employee');
+      }
+    }
+  });
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -65,7 +92,7 @@ export function CreateEmployeeModal({
                   validators={{
                     onChange: ({ value }: { value: string }) => !value ? 'First Name is required' : undefined
                   }}
-                  children={(field: any) => (
+                  children={(field) => (
                     <FormItem>
                       <FormLabel>First Name</FormLabel>
                       <FormControl>
@@ -89,7 +116,7 @@ export function CreateEmployeeModal({
                   validators={{
                     onChange: ({ value }: { value: string }) => !value ? 'Last Name is required' : undefined
                   }}
-                  children={(field: any) => (
+                  children={(field) => (
                     <FormItem>
                       <FormLabel>Last Name</FormLabel>
                       <FormControl>
@@ -116,7 +143,7 @@ export function CreateEmployeeModal({
                   onChange: ({ value }: { value: string }) => 
                     !value ? 'Email is required' : !/^\S+@\S+$/i.test(value) ? 'Invalid email address' : undefined
                 }}
-                children={(field: any) => (
+                children={(field) => (
                   <FormItem>
                     <FormLabel>Email Address</FormLabel>
                     <FormControl>
@@ -142,7 +169,7 @@ export function CreateEmployeeModal({
                   onChange: ({ value }: { value: string }) => 
                     !value ? 'Password is required' : value.length < 6 ? 'Password must be at least 6 characters' : undefined
                 }}
-                children={(field: any) => (
+                children={(field) => (
                   <FormItem>
                     <FormLabel>Initial Password</FormLabel>
                     <FormControl>
@@ -165,7 +192,7 @@ export function CreateEmployeeModal({
               <div className="grid grid-cols-2 gap-4">
                 <form.Field
                   name="phone"
-                  children={(field: any) => (
+                  children={(field) => (
                     <FormItem>
                       <FormLabel>Phone Number</FormLabel>
                       <FormControl>
@@ -185,7 +212,7 @@ export function CreateEmployeeModal({
                 />
                 <form.Field
                   name="jobTitle"
-                  children={(field: any) => (
+                  children={(field) => (
                     <FormItem>
                       <FormLabel>Job Title</FormLabel>
                       <FormControl>
@@ -208,7 +235,7 @@ export function CreateEmployeeModal({
               <div className="grid grid-cols-2 gap-4">
                 <form.Field
                   name="departmentCode"
-                  children={(field: any) => (
+                  children={(field) => (
                     <FormItem>
                       <FormLabel>Department Code</FormLabel>
                       <FormControl>
@@ -220,7 +247,7 @@ export function CreateEmployeeModal({
                           onChange={(e) => field.handleChange(e.target.value)}
                           className="w-full px-3 py-2 rounded-lg border border-surface0/60 bg-mantle text-xs text-text outline-none focus:border-mauve transition-all cursor-pointer"
                         >
-                          {departments?.map((dept: any) => (
+                          {departments?.map((dept) => (
                             <option key={dept.id} value={dept.code}>
                               {dept.name} ({dept.code})
                             </option>
@@ -233,7 +260,7 @@ export function CreateEmployeeModal({
                 />
                 <form.Field
                   name="role"
-                  children={(field: any) => (
+                  children={(field) => (
                     <FormItem>
                       <FormLabel>Role</FormLabel>
                       <FormControl>
@@ -242,7 +269,7 @@ export function CreateEmployeeModal({
                           name={field.name}
                           value={field.state.value}
                           onBlur={field.handleBlur}
-                          onChange={(e) => field.handleChange(e.target.value)}
+                          onChange={(e) => field.handleChange(e.target.value as any)}
                           className="w-full px-3 py-2 rounded-lg border border-surface0/60 bg-mantle text-xs text-text outline-none focus:border-mauve transition-all cursor-pointer"
                         >
                           <option value="ROLE_EMPLOYEE">Employee</option>
@@ -263,7 +290,7 @@ export function CreateEmployeeModal({
                     onChange: ({ value }: { value: number }) => 
                       typeof value !== 'number' || isNaN(value) || value <= 0 ? 'Salary must be a positive number' : undefined
                   }}
-                  children={(field: any) => (
+                  children={(field) => (
                     <FormItem>
                       <FormLabel>Salary ($/yr)</FormLabel>
                       <FormControl>
@@ -284,7 +311,7 @@ export function CreateEmployeeModal({
                 />
                 <form.Field
                   name="managerId"
-                  children={(field: any) => (
+                  children={(field) => (
                     <FormItem>
                       <FormLabel>Reports To (Manager)</FormLabel>
                       <FormControl>
@@ -297,7 +324,7 @@ export function CreateEmployeeModal({
                           className="w-full px-3 py-2 rounded-lg border border-surface0/60 bg-mantle text-xs text-text outline-none focus:border-mauve transition-all cursor-pointer"
                         >
                           <option value="">No Manager (Independent)</option>
-                          {managersList.map((m: any) => (
+                          {managersList.map((m) => (
                             <option key={m.id} value={m.id}>
                               {m.firstName} {m.lastName}
                             </option>

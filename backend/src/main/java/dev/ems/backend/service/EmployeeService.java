@@ -6,11 +6,13 @@ import dev.ems.backend.model.Employee;
 import dev.ems.backend.model.EmployeeStatus;
 import dev.ems.backend.model.Role;
 import dev.ems.backend.repository.DepartmentRepository;
+import dev.ems.backend.model.NotificationType;
 import dev.ems.backend.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,10 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
     private final PasswordEncoder passwordEncoder;
+    private final NotificationService notificationService;
+
+    @Value("${ems.frontend.url}")
+    private String frontendUrl;
 
     @Transactional(readOnly = true)
     public List<Employee> getAllEmployees() {
@@ -78,7 +84,30 @@ public class EmployeeService {
                 .role(request.getRole() != null ? request.getRole() : Role.ROLE_EMPLOYEE)
                 .build();
 
-        return employeeRepository.save(employee);
+        Employee savedEmployee = employeeRepository.save(employee);
+
+        // Send welcome email with login credentials
+        String subject = "Welcome to EMS! Your Account Details";
+        String messageBody = String.format(
+            "Welcome to the Employee Management System, %s %s!\n\n" +
+            "Your account has been successfully created by the administrator.\n\n" +
+            "Here are your login credentials:\n" +
+            "Email: %s\n" +
+            "Password: %s\n\n" +
+            "Please log in at %s/login and update your password immediately.",
+            savedEmployee.getFirstName(),
+            savedEmployee.getLastName(),
+            savedEmployee.getEmail(),
+            request.getPassword(),
+            frontendUrl
+        );
+        try {
+            notificationService.sendNotification(savedEmployee, subject, messageBody, NotificationType.EMPLOYEE_CREATED);
+        } catch (Exception e) {
+            // Log warning but don't fail the registration if notification fails
+        }
+
+        return savedEmployee;
     }
 
     @Transactional

@@ -32,6 +32,7 @@ import {
   Activity
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Toaster } from '../components/ui/sonner';
 
 interface MyRouterContext {
   queryClient: QueryClient;
@@ -123,6 +124,7 @@ function RootDocument() {
         </head>
         <body>
           <Outlet />
+          <Toaster />
           <Scripts />
         </body>
       </html>
@@ -278,6 +280,7 @@ function RootDocument() {
             TanStackQueryDevtools,
           ]}
         />
+        <Toaster />
         <Scripts />
       </body>
     </html>

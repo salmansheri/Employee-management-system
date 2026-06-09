@@ -8,14 +8,6 @@ export interface UserProfile {
   exp: number;
 }
 
-interface AuthState {
-  accessToken: string | null;
-  user: UserProfile | null;
-  isAuthenticated: boolean;
-  setAuth: (token: string) => void;
-  clearAuth: () => void;
-}
-
 function decodeJwt(token: string): UserProfile | null {
   try {
     const base64Url = token.split('.')[1];
@@ -29,8 +21,17 @@ function decodeJwt(token: string): UserProfile | null {
     );
     return JSON.parse(jsonPayload);
   } catch (e) {
+    console.error('[Auth Store] Failed to decode JWT token:', e);
     return null;
   }
+}
+
+interface AuthState {
+  accessToken: string | null;
+  user: UserProfile | null;
+  isAuthenticated: boolean;
+  setAuth: (token: string) => void;
+  clearAuth: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -42,6 +43,7 @@ export const useAuthStore = create<AuthState>()(
       setAuth: (token: string) => {
         const decoded = decodeJwt(token);
         if (decoded) {
+          console.log(`[Auth Store] Session initialized for User: ${decoded.email}, Role: ${decoded.role}`);
           set({
             accessToken: token,
             user: decoded,
@@ -50,6 +52,7 @@ export const useAuthStore = create<AuthState>()(
         }
       },
       clearAuth: () => {
+        console.log('[Auth Store] Session cleared. User logged out.');
         set({
           accessToken: null,
           user: null,

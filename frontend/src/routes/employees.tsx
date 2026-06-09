@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
-import { useForm } from '@tanstack/react-form';
 import { useMeQuery } from '../hooks/useAuth';
 import { 
   useEmployeesQuery, 
@@ -18,6 +17,8 @@ import { EmployeeCard } from '../components/EmployeeCard';
 import { EmployeeDetailsModal } from '../components/EmployeeDetailsModal';
 import { CreateEmployeeModal } from '../components/CreateEmployeeModal';
 import { EditEmployeeModal } from '../components/EditEmployeeModal';
+import type { EmployeeDto, RegisterRequest } from '../client/types.gen';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/employees')({
   component: EmployeesComponent,
@@ -34,9 +35,8 @@ function EmployeesComponent() {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   
   // Selected Employee records
-  const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<EmployeeDto | null>(null);
   
-  const [formError, setFormError] = useState<string | null>(null);
   const [formLoading, setFormLoading] = useState(false);
 
   // Fetch logged in profile via hook
@@ -58,112 +58,77 @@ function EmployeesComponent() {
   const isManager = me?.role === 'ROLE_MANAGER';
   const hasEditPrivilege = isAdmin || isManager;
 
-  // Form hooks
-  const createForm = useForm({
-    defaultValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-      phone: '',
-      jobTitle: '',
-      departmentCode: 'ENG',
-      managerId: '',
-      salary: 50000,
-      role: 'ROLE_EMPLOYEE'
-    },
-    onSubmit: async ({ value }) => {
-      setFormError(null);
-      setFormLoading(true);
-      try {
-        await registerMutation.mutateAsync({ body: value as any });
-        setIsCreateOpen(false);
-        createForm.reset();
-      } catch (err: any) {
-        setFormError(err.response?.data?.message || err.message || 'Error registering employee');
-      } finally {
-        setFormLoading(false);
-      }
+  const handleCreateSubmit = async (values: RegisterRequest) => {
+    setFormLoading(true);
+    console.log('[Employee Registry] Submitting registration payload:', values);
+    try {
+      await registerMutation.mutateAsync({ body: values });
+      console.log('[Employee Registry] Employee registered successfully.');
+      toast.success('Employee registered', {
+        description: `Successfully registered ${values.firstName} ${values.lastName}.`
+      });
+      setIsCreateOpen(false);
+    } catch (err: any) {
+      console.error('[Employee Registry] Registration failed:', err);
+      toast.error('Registration failed', {
+        description: err.response?.data?.message || err.message || 'Error occurred.'
+      });
+      throw err;
+    } finally {
+      setFormLoading(false);
     }
-  });
-
-  const editForm = useForm({
-    defaultValues: {
-      id: '',
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      jobTitle: '',
-      departmentId: '',
-      managerId: '',
-      salary: 50000,
-      role: 'ROLE_EMPLOYEE',
-      status: 'ACTIVE'
-    },
-    onSubmit: async ({ value }) => {
-      setFormError(null);
-      setFormLoading(true);
-      try {
-        await updateMutation.mutateAsync({ 
-          path: { id: value.id }, 
-          body: value as any 
-        });
-        setIsEditOpen(false);
-      } catch (err: any) {
-        setFormError(err.response?.data?.message || err.message || 'Error updating employee');
-      } finally {
-        setFormLoading(false);
-      }
-    }
-  });
-
-  const resetCreateForm = () => {
-    createForm.reset({
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-      phone: '',
-      jobTitle: '',
-      departmentCode: departments?.[0]?.code || 'ENG',
-      managerId: '',
-      salary: 50000,
-      role: 'ROLE_EMPLOYEE'
-    });
-    setFormError(null);
   };
 
-  const openEditModal = (emp: any) => {
-    editForm.reset({
-      id: emp.id || '',
-      firstName: emp.firstName || '',
-      lastName: emp.lastName || '',
-      email: emp.email || '',
-      phone: emp.phone || '',
-      jobTitle: emp.jobTitle || '',
-      departmentId: emp.departmentId || '',
-      managerId: emp.managerId || '',
-      salary: emp.salary || 50000,
-      role: emp.role || 'ROLE_EMPLOYEE',
-      status: emp.status || 'ACTIVE'
-    });
-    setFormError(null);
+  const handleEditSubmit = async (values: EmployeeDto) => {
+    setFormLoading(true);
+    console.log(`[Employee Edit] Submitting profile update payload for ID ${values.id}:`, values);
+    try {
+      await updateMutation.mutateAsync({ 
+        path: { id: values.id! }, 
+        body: values as any 
+      });
+      console.log('[Employee Edit] Profile updated successfully.');
+      toast.success('Employee updated', {
+        description: `Profile details for ${values.firstName} ${values.lastName} saved.`
+      });
+      setIsEditOpen(false);
+    } catch (err: any) {
+      console.error('[Employee Edit] Profile update failed:', err);
+      toast.error('Update failed', {
+        description: err.response?.data?.message || err.message || 'Error occurred.'
+      });
+      throw err;
+    } finally {
+      setFormLoading(false);
+    }
+  };
+
+  const openEditModal = (emp: EmployeeDto) => {
+    console.log(`[Employee Directory] Loading edit profile modal for: ${emp.firstName} ${emp.lastName}`);
+    setSelectedEmployee(emp);
     setIsEditOpen(true);
   };
 
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this employee record?')) {
+      console.log(`[Employee Directory] Deletion requested for employee ID: ${id}`);
       try {
         await deleteMutation.mutateAsync({ path: { id } });
+        console.log('[Employee Directory] Employee record deleted successfully.');
+        toast.success('Employee record deleted', {
+          description: 'Employee profile was removed from database.'
+        });
       } catch (err: any) {
-        alert(err.response?.data?.message || err.message || 'Failed to delete employee');
+        console.error('[Employee Directory] Deletion failed:', err);
+        toast.error('Deletion failed', {
+          description: err.response?.data?.message || err.message || 'Error occurred.'
+        });
       }
     }
   };
 
   // Filter logic
-  const filteredEmployees = employees?.filter((emp: any) => {
+  const filteredEmployees = employees?.filter((emp) => {
     const fullName = `${emp.firstName || ''} ${emp.lastName || ''}`.toLowerCase();
     const searchMatch = 
       fullName.includes(searchTerm.toLowerCase()) ||
@@ -176,7 +141,7 @@ function EmployeesComponent() {
     return searchMatch && deptMatch && roleMatch;
   }) || [];
 
-  const managersList = employees?.filter((emp: any) => emp.role === 'ROLE_MANAGER' || emp.role === 'ROLE_ADMIN') || [];
+  const managersList = employees?.filter((emp) => emp.role === 'ROLE_MANAGER' || emp.role === 'ROLE_ADMIN') || [];
 
   return (
     <div className="space-y-6">
@@ -192,7 +157,6 @@ function EmployeesComponent() {
         {hasEditPrivilege && (
           <button
             onClick={() => {
-              resetCreateForm();
               setIsCreateOpen(true);
             }}
             className="flex items-center gap-2 rounded-xl bg-mauve hover:bg-mauve/95 text-crust py-2.5 px-4 font-semibold shadow-lg shadow-mauve/15 transition-all cursor-pointer"
@@ -222,7 +186,7 @@ function EmployeesComponent() {
           className="w-full px-3 py-2 rounded-lg border border-surface0/60 bg-mantle text-xs text-text outline-none focus:border-mauve transition-all cursor-pointer"
         >
           <option value="">All Departments</option>
-          {departments?.map((dept: any) => (
+          {departments?.map((dept) => (
             <option key={dept.id} value={dept.id}>
               {dept.name} ({dept.code})
             </option>
@@ -249,7 +213,7 @@ function EmployeesComponent() {
         </div>
       ) : filteredEmployees.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEmployees.map((emp: any) => (
+          {filteredEmployees.map((emp) => (
             <EmployeeCard
               key={emp.id}
               emp={emp}
@@ -270,27 +234,31 @@ function EmployeesComponent() {
         </div>
       )}
 
-      {/* CREATE MODAL OVERLAY */}
-      <CreateEmployeeModal
-        isOpen={isCreateOpen}
-        onClose={() => setIsCreateOpen(false)}
-        form={createForm}
-        formError={formError}
-        formLoading={formLoading}
-        departments={departments || []}
-        managersList={managersList}
-      />
+      {/* CREATE MODAL OVERLAY - Rendered conditionally to refresh state on mount */}
+      {isCreateOpen && (
+        <CreateEmployeeModal
+          isOpen={isCreateOpen}
+          onClose={() => setIsCreateOpen(false)}
+          departments={departments || []}
+          managersList={managersList}
+          onSubmit={handleCreateSubmit}
+          formLoading={formLoading}
+        />
+      )}
 
-      {/* EDIT MODAL OVERLAY */}
-      <EditEmployeeModal
-        isOpen={isEditOpen}
-        onClose={() => setIsEditOpen(false)}
-        form={editForm}
-        formError={formError}
-        formLoading={formLoading}
-        departments={departments || []}
-        managersList={managersList}
-      />
+      {/* EDIT MODAL OVERLAY - Rendered conditionally with key prop to re-initialize form state when different employee is selected */}
+      {isEditOpen && selectedEmployee && (
+        <EditEmployeeModal
+          key={selectedEmployee.id}
+          isOpen={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
+          employee={selectedEmployee}
+          departments={departments || []}
+          managersList={managersList}
+          onSubmit={handleEditSubmit}
+          formLoading={formLoading}
+        />
+      )}
 
       {/* DETAILS VIEW MODAL OVERLAY */}
       <EmployeeDetailsModal

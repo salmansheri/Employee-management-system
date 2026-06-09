@@ -1,23 +1,27 @@
 import { X, Check } from 'lucide-react';
+import type { LeaveRequestDto, WfhRequestDto } from '../client/types.gen';
 
 interface ApprovalItemProps {
-  request: any;
+  request: LeaveRequestDto | WfhRequestDto;
   type: 'LEAVE' | 'WFH';
   onApprove: () => void;
   onReject: () => void;
 }
 
 export function ApprovalItem({ request, type, onApprove, onReject }: ApprovalItemProps) {
-  const formattedStart = new Date(request.startDate).toLocaleDateString([], {
+  const formattedStart = request.startDate ? new Date(request.startDate).toLocaleDateString([], {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
-  });
-  const formattedEnd = new Date(request.endDate).toLocaleDateString([], {
+  }) : '';
+  const formattedEnd = request.endDate ? new Date(request.endDate).toLocaleDateString([], {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
-  });
+  }) : '';
+
+  // Safe checks since leaveType is specific to LeaveRequestDto
+  const leaveTypeLabel = type === 'LEAVE' && 'leaveType' in request ? request.leaveType : '';
 
   return (
     <div className="p-4 rounded-xl bg-mantle border border-surface0/60 flex flex-col justify-between gap-4 text-xs">
@@ -29,8 +33,8 @@ export function ApprovalItem({ request, type, onApprove, onReject }: ApprovalIte
             </div>
             <div>
               <h4 className="font-bold text-text">{request.employeeName || 'Unknown Employee'}</h4>
-              {type === 'LEAVE' && (
-                <span className="text-[10px] font-bold text-mauve uppercase tracking-wider">{request.leaveType} Leave</span>
+              {type === 'LEAVE' && leaveTypeLabel && (
+                <span className="text-[10px] font-bold text-mauve uppercase tracking-wider">{leaveTypeLabel} Leave</span>
               )}
             </div>
           </div>

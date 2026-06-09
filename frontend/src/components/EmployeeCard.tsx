@@ -1,11 +1,12 @@
 import { Mail, Phone, Shield, Edit, Trash2, Building2, Briefcase } from 'lucide-react';
+import type { EmployeeDto } from '../client/types.gen';
 
 interface EmployeeCardProps {
-  emp: any;
-  me: any;
+  emp: EmployeeDto;
+  me: EmployeeDto | null | undefined;
   hasEditPrivilege: boolean;
-  onViewDetails: (emp: any) => void;
-  onEditClick: (emp: any) => void;
+  onViewDetails: (emp: EmployeeDto) => void;
+  onEditClick: (emp: EmployeeDto) => void;
   onDeleteClick: (id: string) => void;
 }
 
@@ -95,9 +96,9 @@ export function EmployeeCard({
             >
               <Edit className="h-4 w-4" />
             </button>
-            {emp.id !== me?.id && (
+            {emp.id !== me?.id && emp.id && (
               <button
-                onClick={() => onDeleteClick(emp.id)}
+                onClick={() => onDeleteClick(emp.id!)}
                 className="p-1.5 rounded-lg hover:bg-red/10 hover:text-red text-subtext0 transition-all cursor-pointer"
                 title="Delete Record"
               >

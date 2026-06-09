@@ -1,13 +1,14 @@
 import { X, Edit } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import type { EmployeeDto } from '../client/types.gen';
 
 interface EmployeeDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedEmployee: any;
+  selectedEmployee: EmployeeDto | null;
   isAdmin: boolean;
   hasEditPrivilege: boolean;
-  onEditClick: (emp: any) => void;
+  onEditClick: (emp: EmployeeDto) => void;
 }
 
 export function EmployeeDetailsModal({

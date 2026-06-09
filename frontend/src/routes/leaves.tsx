@@ -26,6 +26,7 @@ import { RequestListItem } from '../components/RequestListItem';
 import { ApprovalItem } from '../components/ApprovalItem';
 import { DatePicker } from '../components/DatePicker';
 import { FormItem, FormLabel, FormControl, FormMessage } from '../components/ui/form';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/leaves')({
   component: LeavesComponent,
@@ -74,6 +75,7 @@ function LeavesComponent() {
       setFormError(null);
       setFormSuccess(null);
       setActionLoading(true);
+      console.log('[Leave Application] Submitting Leave Request payload:', value);
 
       try {
         if (!value.startDate || !value.endDate || !value.reason) {
@@ -83,11 +85,19 @@ function LeavesComponent() {
           throw new Error('Start date cannot be after end date');
         }
         await applyLeaveMutation.mutateAsync({ body: value as any });
+        console.log('[Leave Application] Leave request submitted successfully.');
+        toast.success('Leave requested', {
+          description: 'Your leave application has been submitted to your manager.'
+        });
         leaveForm.reset();
         setFormSuccess('Leave application submitted successfully!');
         setTimeout(() => setFormSuccess(null), 3000);
         setActiveTab('my-requests');
       } catch (err: any) {
+        console.error('[Leave Application] Submission failed:', err);
+        toast.error('Submission failed', {
+          description: err.response?.data?.message || err.message || 'Error occurred.'
+        });
         setFormError(err.response?.data?.message || err.message || 'Error submitting application');
       } finally {
         setActionLoading(false);
@@ -105,6 +115,7 @@ function LeavesComponent() {
       setFormError(null);
       setFormSuccess(null);
       setActionLoading(true);
+      console.log('[WFH Application] Submitting WFH Request payload:', value);
 
       try {
         if (!value.startDate || !value.endDate || !value.reason) {
@@ -114,11 +125,19 @@ function LeavesComponent() {
           throw new Error('Start date cannot be after end date');
         }
         await applyWfhMutation.mutateAsync({ body: value as any });
+        console.log('[WFH Application] WFH request submitted successfully.');
+        toast.success('WFH requested', {
+          description: 'Your remote work application has been submitted to your manager.'
+        });
         wfhForm.reset();
         setFormSuccess('WFH application submitted successfully!');
         setTimeout(() => setFormSuccess(null), 3000);
         setActiveTab('my-requests');
       } catch (err: any) {
+        console.error('[WFH Application] Submission failed:', err);
+        toast.error('Submission failed', {
+          description: err.response?.data?.message || err.message || 'Error occurred.'
+        });
         setFormError(err.response?.data?.message || err.message || 'Error submitting application');
       } finally {
         setActionLoading(false);
@@ -132,6 +151,7 @@ function LeavesComponent() {
     },
     onSubmit: async ({ value }) => {
       if (!rejectionTarget) return;
+      console.log(`[Approval Tray] Manager rejecting request ID ${rejectionTarget.id} (Type: ${rejectionTarget.type}) with reason:`, value.reason);
 
       try {
         if (rejectionTarget.type === 'LEAVE') {
@@ -145,24 +165,39 @@ function LeavesComponent() {
             query: { reason: value.reason } 
           });
         }
+        console.log('[Approval Tray] Rejection processed successfully.');
+        toast.success('Request rejected', {
+          description: `The ${rejectionTarget.type.toLowerCase()} request was marked as rejected.`
+        });
         setRejectionTarget(null);
         rejectionForm.reset();
       } catch (err: any) {
-        alert(err.response?.data?.message || 'Rejection failed');
+        console.error('[Approval Tray] Rejection failed:', err);
+        toast.error('Rejection failed', {
+          description: err.response?.data?.message || err.message || 'Error occurred.'
+        });
       }
     }
   });
 
   const handleApprove = async (id: string, type: 'LEAVE' | 'WFH') => {
     if (confirm(`Approve this ${type.toLowerCase()} request?`)) {
+      console.log(`[Approval Tray] Manager approving request ID ${id} (Type: ${type})`);
       try {
         if (type === 'LEAVE') {
           await approveLeaveMutation.mutateAsync({ path: { id } });
         } else {
           await approveWfhMutation.mutateAsync({ path: { id } });
         }
+        console.log('[Approval Tray] Approval processed successfully.');
+        toast.success('Request approved', {
+          description: `The ${type.toLowerCase()} request was marked as approved.`
+        });
       } catch (err: any) {
-        alert(err.response?.data?.message || 'Approval failed');
+        console.error('[Approval Tray] Approval failed:', err);
+        toast.error('Approval failed', {
+          description: err.response?.data?.message || err.message || 'Error occurred.'
+        });
       }
     }
   };

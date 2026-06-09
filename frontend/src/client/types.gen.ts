@@ -154,7 +154,7 @@ export type NotificationDto = {
     employeeName?: string;
     title?: string;
     message?: string;
-    type?: 'LEAVE_APPLIED' | 'LEAVE_APPROVED' | 'LEAVE_REJECTED' | 'WFH_APPLIED' | 'WFH_APPROVED' | 'WFH_REJECTED' | 'TASK_ASSIGNED';
+    type?: 'LEAVE_APPLIED' | 'LEAVE_APPROVED' | 'LEAVE_REJECTED' | 'WFH_APPLIED' | 'WFH_APPROVED' | 'WFH_REJECTED' | 'TASK_ASSIGNED' | 'EMPLOYEE_CREATED';
     createdAt?: string;
     updatedAt?: string;
     read?: boolean;

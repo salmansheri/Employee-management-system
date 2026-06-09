@@ -7,5 +7,6 @@ public enum NotificationType {
     WFH_APPLIED,
     WFH_APPROVED,
     WFH_REJECTED,
-    TASK_ASSIGNED
+    TASK_ASSIGNED,
+    EMPLOYEE_CREATED
 }

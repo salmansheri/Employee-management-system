@@ -10,6 +10,7 @@ import {
   useDeleteTaskMutation 
 } from '../hooks/useTasks';
 import { useEmployeesQuery } from '../hooks/useEmployees';
+import { toast } from 'sonner';
 import { 
   Plus, 
   Trash2, 
@@ -65,8 +66,10 @@ function TasksComponent() {
     onSubmit: async ({ value }) => {
       setFormError(null);
       setFormLoading(true);
+      console.log('[Tasks Workspace] Submitting new task payload:', value);
 
       if (!value.title || !value.assignedToId) {
+        console.warn('[Tasks Workspace] Task creation payload validation failed: missing title or assignee.');
         setFormError('Please fill in title and assignee');
         setFormLoading(false);
         return;
@@ -74,10 +77,19 @@ function TasksComponent() {
 
       try {
         await createTaskMutation.mutateAsync({ body: value as any });
+        console.log('[Tasks Workspace] Task created successfully.');
+        toast.success('Task assigned successfully', {
+          description: `Assigned task "${value.title}" to employee.`
+        });
         setIsCreateOpen(false);
         createTaskForm.reset();
       } catch (err: any) {
-        setFormError(err.response?.data?.message || 'Error creating task');
+        console.error('[Tasks Workspace] Task creation failed:', err);
+        const errMsg = err.response?.data?.message || 'Error creating task';
+        setFormError(errMsg);
+        toast.error('Task assignment failed', {
+          description: errMsg
+        });
       } finally {
         setFormLoading(false);
       }
@@ -97,10 +109,16 @@ function TasksComponent() {
 
   const handleDeleteTask = async (id: string) => {
     if (confirm('Are you sure you want to delete this task?')) {
+      console.log(`[Tasks Workspace] Deleting task ID: ${id}`);
       try {
         await deleteTaskMutation.mutateAsync({ path: { id } });
+        console.log('[Tasks Workspace] Task deleted successfully.');
+        toast.success('Task deleted successfully');
       } catch (err: any) {
-        alert(err.response?.data?.message || 'Failed to delete task');
+        console.error('[Tasks Workspace] Task deletion failed:', err);
+        toast.error('Deletion failed', {
+          description: err.response?.data?.message || 'Failed to delete task.'
+        });
       }
     }
   };
@@ -110,9 +128,35 @@ function TasksComponent() {
     const currentIndex = columns.indexOf(task.status);
     
     if (direction === 'forward' && currentIndex < columns.length - 1) {
-      updateStatusMutation.mutate({ path: { id: task.id }, query: { status: columns[currentIndex + 1] } });
+      const targetStatus = columns[currentIndex + 1];
+      console.log(`[Tasks Workspace] Moving task ID ${task.id} forward: ${task.status} -> ${targetStatus}`);
+      updateStatusMutation.mutate({ path: { id: task.id }, query: { status: targetStatus } }, {
+        onSuccess: () => {
+          toast.success('Task status updated', {
+            description: `Moved "${task.title}" to ${targetStatus}`
+          });
+        },
+        onError: (err: any) => {
+          toast.error('Failed to move task', {
+            description: err.response?.data?.message || 'Please try again.'
+          });
+        }
+      });
     } else if (direction === 'backward' && currentIndex > 0) {
-      updateStatusMutation.mutate({ path: { id: task.id }, query: { status: columns[currentIndex - 1] } });
+      const targetStatus = columns[currentIndex - 1];
+      console.log(`[Tasks Workspace] Moving task ID ${task.id} backward: ${task.status} -> ${targetStatus}`);
+      updateStatusMutation.mutate({ path: { id: task.id }, query: { status: targetStatus } }, {
+        onSuccess: () => {
+          toast.success('Task status updated', {
+            description: `Moved "${task.title}" to ${targetStatus}`
+          });
+        },
+        onError: (err: any) => {
+          toast.error('Failed to move task', {
+            description: err.response?.data?.message || 'Please try again.'
+          });
+        }
+      });
     }
   };
 

@@ -5,6 +5,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { useLoginMutation } from '../hooks/useAuth';
 import { Mail, Lock, Eye, EyeOff, Loader2, Building2 } from 'lucide-react';
 import { FormItem, FormLabel, FormControl, FormMessage } from '../components/ui/form';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/login')({
   component: LoginComponent,
@@ -41,14 +42,19 @@ function LoginComponent() {
         await loginMutation.mutateAsync({
           body: value,
         });
+        toast.success('Signed in successfully', {
+          description: 'Welcome back to your EMS dashboard.'
+        });
         navigate({ to: '/' });
       } catch (err: any) {
         console.error('Login error:', err);
-        setError(
-          err.response?.data?.message ||
-            err.response?.data?.error ||
-            'Invalid email or password. Please try again.'
-        );
+        const errMsg = err.response?.data?.message ||
+          err.response?.data?.error ||
+          'Invalid email or password. Please try again.';
+        setError(errMsg);
+        toast.error('Authentication failed', {
+          description: errMsg
+        });
       }
     },
   });

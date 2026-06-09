@@ -16,7 +16,7 @@ function Calendar({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={cn("p-4 bg-mantle text-text rounded-xl border border-surface0/60", className)}
+      className={cn("relative p-4 bg-mantle text-text rounded-xl border border-surface0/60", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
@@ -32,8 +32,9 @@ function Calendar({
           "h-6 w-6 bg-transparent p-0 opacity-60 hover:opacity-100 text-subtext0 hover:text-text cursor-pointer hover:bg-surface0/40"
         ),
         weeks: "w-full space-y-1.5",
+        weekdays: "flex w-full gap-1.5 justify-center",
         week: "flex w-full mt-1.5 gap-1.5 justify-center",
-        weekday: "text-surface2 rounded-md w-8 font-bold text-[10px] text-center uppercase tracking-wider",
+        weekday: "text-surface2 w-8 h-8 font-bold text-[10px] flex items-center justify-center uppercase tracking-wider",
         day: "h-8 w-8 p-0 flex items-center justify-center",
         day_button: cn(
           buttonVariants({ variant: "ghost" }),
