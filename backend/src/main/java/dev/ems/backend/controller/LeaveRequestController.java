@@ -6,6 +6,7 @@ import dev.ems.backend.model.Employee;
 import dev.ems.backend.model.LeaveRequest;
 import dev.ems.backend.service.LeaveRequestService;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -51,7 +52,7 @@ public class LeaveRequestController {
 
     @PostMapping
     public ResponseEntity<LeaveRequestDto> applyForLeave(
-            @RequestBody LeaveRequestDto dto,
+            @Valid @RequestBody LeaveRequestDto dto,
             @AuthenticationPrincipal Employee currentEmployee) {
         
         LeaveRequest request = leaveRequestService.applyForLeave(

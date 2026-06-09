@@ -1,5 +1,8 @@
 import { createRouter as createTanStackRouter } from '@tanstack/react-router'
 import { routeTree } from './routeTree.gen'
+import { initApiInterceptors } from './lib/hey-api'
+
+initApiInterceptors()
 
 import type { ReactNode } from 'react'
 import { QueryClient } from '@tanstack/react-query'
