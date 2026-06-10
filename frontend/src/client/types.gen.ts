@@ -103,6 +103,11 @@ export type DepartmentDto = {
     updatedAt?: string;
 };
 
+export type ChangePasswordRequest = {
+    currentPassword: string;
+    newPassword: string;
+};
+
 export type WfhRequestCreate = {
     startDate: string;
     endDate: string;
@@ -441,6 +446,22 @@ export type UpdateDepartmentResponses = {
 };
 
 export type UpdateDepartmentResponse = UpdateDepartmentResponses[keyof UpdateDepartmentResponses];
+
+export type ChangePasswordData = {
+    body: ChangePasswordRequest;
+    path?: never;
+    query?: never;
+    url: '/api/auth/change-password';
+};
+
+export type ChangePasswordResponses = {
+    /**
+     * OK
+     */
+    200: string;
+};
+
+export type ChangePasswordResponse = ChangePasswordResponses[keyof ChangePasswordResponses];
 
 export type GetAllWfhRequestsData = {
     body?: never;

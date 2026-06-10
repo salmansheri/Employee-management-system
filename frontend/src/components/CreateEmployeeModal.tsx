@@ -4,13 +4,6 @@ import { z } from 'zod';
 import { X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FormItem, FormLabel, FormControl, FormMessage } from './ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
 import { toast } from 'sonner';
 import type { DepartmentDto, EmployeeDto, RegisterRequest } from '../client/types.gen';
 
@@ -131,7 +124,7 @@ export function CreateEmployeeModal({
                       <FormMessage>{field.state.meta.errors}</FormMessage>
                     </FormItem>
                   )}
-                />
+                </form.Field>
                 <form.Field name="lastName">
                   {(field) => (
                     <FormItem>
@@ -151,7 +144,7 @@ export function CreateEmployeeModal({
                       <FormMessage>{field.state.meta.errors}</FormMessage>
                     </FormItem>
                   )}
-                />
+                </form.Field>
               </div>
 
               <form.Field name="email">
@@ -173,7 +166,7 @@ export function CreateEmployeeModal({
                     <FormMessage>{field.state.meta.errors}</FormMessage>
                   </FormItem>
                 )}
-              />
+              </form.Field>
 
               <form.Field name="password">
                 {(field) => (
@@ -194,7 +187,7 @@ export function CreateEmployeeModal({
                     <FormMessage>{field.state.meta.errors}</FormMessage>
                   </FormItem>
                 )}
-              />
+              </form.Field>
 
               <div className="grid grid-cols-2 gap-4">
                 <form.Field name="phone">
@@ -215,7 +208,7 @@ export function CreateEmployeeModal({
                       <FormMessage>{field.state.meta.errors}</FormMessage>
                     </FormItem>
                   )}
-                />
+                </form.Field>
                 <form.Field name="jobTitle">
                   {(field) => (
                     <FormItem>
@@ -234,7 +227,7 @@ export function CreateEmployeeModal({
                       <FormMessage>{field.state.meta.errors}</FormMessage>
                     </FormItem>
                   )}
-                />
+                </form.Field>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -261,7 +254,7 @@ export function CreateEmployeeModal({
                       <FormMessage>{field.state.meta.errors}</FormMessage>
                     </FormItem>
                   )}
-                />
+                </form.Field>
                 <form.Field
                   name="role"
                   children={(field) => (
@@ -337,7 +330,7 @@ export function CreateEmployeeModal({
                       <FormMessage>{field.state.meta.errors}</FormMessage>
                     </FormItem>
                   )}
-                />
+                </form.Field>
               </div>
 
               <div className="flex justify-end gap-3 pt-4 border-t border-surface0/60">

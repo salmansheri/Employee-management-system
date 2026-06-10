@@ -38,12 +38,16 @@ public class AttendanceService {
         return attendanceRepository.findActivePunch(employeeId, LocalDate.now());
     }
 
+    @Transactional(readOnly = true)
+    public Optional<Attendance> getTodayPunch(UUID employeeId) {
+        return attendanceRepository.findByEmployeeIdAndDate(employeeId, LocalDate.now());
+    }
+
     @Transactional
     public Attendance punchIn(Employee employee, WorkLocation manualLocation) {
         LocalDate today = LocalDate.now();
-        Optional<Attendance> activePunch = attendanceRepository.findActivePunch(employee.getId(), today);
-        if (activePunch.isPresent()) {
-            throw new IllegalArgumentException("Employee is already punched in for today");
+        if (attendanceRepository.existsByEmployeeIdAndDate(employee.getId(), today)) {
+            throw new IllegalArgumentException("Employee has already started or completed an attendance session today");
         }
 
         WorkLocation location = manualLocation;

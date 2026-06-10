@@ -2,6 +2,7 @@ package dev.ems.backend.service;
 
 import dev.ems.backend.dto.ChangePasswordRequest;
 import dev.ems.backend.dto.RegisterRequest;
+import dev.ems.backend.dto.UpdateEmployeeRequest;
 import dev.ems.backend.model.Department;
 import dev.ems.backend.model.Employee;
 import dev.ems.backend.model.EmployeeStatus;
@@ -113,7 +114,7 @@ public class EmployeeService {
 
     @Transactional
     @CacheEvict(value = "employees", key = "#id")
-    public Employee updateEmployee(UUID id, RegisterRequest request) {
+    public Employee updateEmployee(UUID id, UpdateEmployeeRequest request) {
         Employee employee = getEmployeeById(id);
 
         if (request.getEmail() != null && !request.getEmail().equals(employee.getEmail())) {

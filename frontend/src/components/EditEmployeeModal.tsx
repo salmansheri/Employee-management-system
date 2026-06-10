@@ -129,7 +129,7 @@ export function EditEmployeeModal({
                       <FormMessage>{field.state.meta.errors}</FormMessage>
                     </FormItem>
                   )}
-                />
+                </form.Field>
                 <form.Field name="lastName">
                   {(field) => (
                     <FormItem>
@@ -149,7 +149,7 @@ export function EditEmployeeModal({
                       <FormMessage>{field.state.meta.errors}</FormMessage>
                     </FormItem>
                   )}
-                />
+                </form.Field>
               </div>
 
               <form.Field name="email">
@@ -171,7 +171,7 @@ export function EditEmployeeModal({
                     <FormMessage>{field.state.meta.errors}</FormMessage>
                   </FormItem>
                 )}
-              />
+              </form.Field>
 
               <div className="grid grid-cols-2 gap-4">
                 <form.Field
@@ -273,7 +273,7 @@ export function EditEmployeeModal({
                   name="salary"
                   validators={{
                     onChange: ({ value }: { value: number }) => 
-                      typeof value !== 'number' || isNaN(value) || value <= 0 ? 'Salary must be a positive number' : undefined
+                    typeof value !== 'number' || isNaN(value) || value <= 0 ? 'Salary must be a positive number' : undefined
                   }}
                   children={(field) => (
                     <FormItem className="col-span-2">

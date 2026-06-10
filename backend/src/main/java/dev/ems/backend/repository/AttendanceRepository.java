@@ -20,6 +20,10 @@ public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
     @Query("SELECT a FROM Attendance a WHERE a.employee.id = :empId AND a.date = :date AND a.clockOut IS NULL")
     Optional<Attendance> findActivePunch(@Param("empId") UUID empId, @Param("date") LocalDate date);
 
+    boolean existsByEmployeeIdAndDate(UUID employeeId, LocalDate date);
+
+    Optional<Attendance> findByEmployeeIdAndDate(UUID employeeId, LocalDate date);
+
     @Query("SELECT a FROM Attendance a WHERE a.employee.id = :employeeId AND a.date BETWEEN :startDate AND :endDate ORDER BY a.date DESC")
     List<Attendance> findByEmployeeIdAndDateRange(@Param("employeeId") UUID employeeId, 
                                                  @Param("startDate") LocalDate startDate, 

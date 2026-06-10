@@ -3,7 +3,84 @@
 @import 'tw-animate-css';
 
 :root {
-  /* Catppuccin Mocha Dark Palette variables mapped to standard shadcn tokens */
+  /* Catppuccin Latte (Light Mode) Tokens mapped to standard shadcn tokens */
+  --background: #eff1f5; /* Base */
+  --foreground: #4c4f69; /* Text */
+  
+  --card: #e6e9ef; /* Mantle */
+  --card-foreground: #4c4f69;
+  
+  --popover: #dce0e8; /* Crust */
+  --popover-foreground: #4c4f69;
+  
+  --primary: #8839ef; /* Mauve */
+  --primary-foreground: #eff1f5;
+  
+  --secondary: #ccd0da; /* Surface 0 */
+  --secondary-foreground: #4c4f69;
+  
+  --muted: #ccd0da;
+  --muted-foreground: #6c6f85; /* Subtext 0 */
+  
+  --accent: #bcc0cc; /* Surface 1 */
+  --accent-foreground: #4c4f69;
+  
+  --destructive: #d20f39; /* Red */
+  --destructive-foreground: #eff1f5;
+  
+  --border: #ccd0da;
+  --input: #ccd0da;
+  --ring: #7287fd; /* Lavender */
+  
+  --radius: 0.75rem;
+  
+  --sidebar: #e6e9ef;
+  --sidebar-foreground: #4c4f69;
+  --sidebar-primary: #8839ef;
+  --sidebar-primary-foreground: #eff1f5;
+  --sidebar-accent: #ccd0da;
+  --sidebar-accent-foreground: #4c4f69;
+  --sidebar-border: #ccd0da;
+  --sidebar-ring: #7287fd;
+
+  /* Background Gradient & Panel Variables */
+  --bg-solid: #eff1f5;
+  --bg-gradient-1: rgba(136, 57, 239, 0.08); /* Mauve */
+  --bg-gradient-2: rgba(30, 102, 245, 0.06); /* Blue */
+  --bg-gradient-3: rgba(64, 160, 43, 0.04); /* Green */
+  
+  --glass-bg: rgba(230, 233, 239, 0.65);
+  --glass-border: rgba(136, 57, 239, 0.05);
+  --glass-glow: rgba(136, 57, 239, 0.01);
+
+  /* Theme-Dependent Palette Mappings (Default: Latte Light) */
+  --color-rosewater-var: #dc8a78;
+  --color-flamingo-var: #dd7878;
+  --color-pink-var: #ea76cb;
+  --color-mauve-var: #8839ef;
+  --color-red-var: #d20f39;
+  --color-maroon-var: #e64553;
+  --color-peach-var: #fe640b;
+  --color-yellow-var: #df8e1d;
+  --color-green-var: #40a02b;
+  --color-teal-var: #179287;
+  --color-sky-var: #04a5e5;
+  --color-sapphire-var: #209fb5;
+  --color-blue-var: #1e66f5;
+  --color-lavender-var: #7287fd;
+  --color-text-var: #4c4f69;
+  --color-subtext1-var: #5c5f77;
+  --color-subtext0-var: #6c6f85;
+  --color-surface2-var: #acb0be;
+  --color-surface1-var: #bcc0cc;
+  --color-surface0-var: #ccd0da;
+  --color-base-var: #eff1f5;
+  --color-mantle-var: #e6e9ef;
+  --color-crust-var: #dce0e8;
+}
+
+.dark {
+  /* Catppuccin Mocha (Dark Mode) Tokens mapped to standard shadcn tokens */
   --background: #1e1e2e; /* Base */
   --foreground: #cdd6f4; /* Text */
   
@@ -14,12 +91,12 @@
   --popover-foreground: #cdd6f4;
   
   --primary: #cba6f7; /* Mauve */
-  --primary-foreground: #11111b; /* Crust */
+  --primary-foreground: #11111b;
   
   --secondary: #313244; /* Surface 0 */
   --secondary-foreground: #cdd6f4;
   
-  --muted: #313244; /* Surface 0 */
+  --muted: #313244;
   --muted-foreground: #a6adc8; /* Subtext 0 */
   
   --accent: #45475a; /* Surface 1 */
@@ -28,11 +105,9 @@
   --destructive: #f38ba8; /* Red */
   --destructive-foreground: #11111b;
   
-  --border: #313244; /* Surface 0 */
+  --border: #313244;
   --input: #313244;
   --ring: #b4befe; /* Lavender */
-  
-  --radius: 0.75rem;
   
   --sidebar: #181825;
   --sidebar-foreground: #cdd6f4;
@@ -43,38 +118,40 @@
   --sidebar-border: #313244;
   --sidebar-ring: #b4befe;
 
-  /* Catppuccin Mocha Color Tokens */
-  --mocha-rosewater: #f5e0dc;
-  --mocha-flamingo: #f2cdcd;
-  --mocha-pink: #f5c2e7;
-  --mocha-mauve: #cba6f7;
-  --mocha-red: #f38ba8;
-  --mocha-maroon: #eba0ac;
-  --mocha-peach: #fab387;
-  --mocha-yellow: #f9e2af;
-  --mocha-green: #a6e3a1;
-  --mocha-teal: #94e2d5;
-  --mocha-sky: #89dceb;
-  --mocha-sapphire: #74c7ec;
-  --mocha-blue: #89b4fa;
-  --mocha-lavender: #b4befe;
-  --mocha-text: #cdd6f4;
-  --mocha-subtext1: #bac2de;
-  --mocha-subtext0: #a6adc8;
-  --mocha-overlay2: #9399b2;
-  --mocha-overlay1: #7f849c;
-  --mocha-overlay0: #6c7086;
-  --mocha-surface2: #585b70;
-  --mocha-surface1: #45475a;
-  --mocha-surface0: #313244;
-  --mocha-base: #1e1e2e;
-  --mocha-mantle: #181825;
-  --mocha-crust: #11111b;
-
-  /* Glassmorphic values */
+  /* Background Gradient & Panel Variables */
+  --bg-solid: #1e1e2e;
+  --bg-gradient-1: rgba(203, 166, 247, 0.15); /* Mauve */
+  --bg-gradient-2: rgba(137, 180, 250, 0.12); /* Blue */
+  --bg-gradient-3: rgba(166, 227, 161, 0.08); /* Green */
+  
   --glass-bg: rgba(24, 24, 37, 0.65);
   --glass-border: rgba(180, 190, 254, 0.08);
   --glass-glow: rgba(203, 166, 247, 0.03);
+
+  /* Theme-Dependent Palette Mappings (Dark Mocha) */
+  --color-rosewater-var: #f5e0dc;
+  --color-flamingo-var: #f2cdcd;
+  --color-pink-var: #f5c2e7;
+  --color-mauve-var: #cba6f7;
+  --color-red-var: #f38ba8;
+  --color-maroon-var: #eba0ac;
+  --color-peach-var: #fab387;
+  --color-yellow-var: #f9e2af;
+  --color-green-var: #a6e3a1;
+  --color-teal-var: #94e2d5;
+  --color-sky-var: #89dceb;
+  --color-sapphire-var: #74c7ec;
+  --color-blue-var: #89b4fa;
+  --color-lavender-var: #b4befe;
+  --color-text-var: #cdd6f4;
+  --color-subtext1-var: #bac2de;
+  --color-subtext0-var: #a6adc8;
+  --color-surface2-var: #585b70;
+  --color-surface1-var: #45475a;
+  --color-surface0-var: #313244;
+  --color-base-var: #1e1e2e;
+  --color-mantle-var: #181825;
+  --color-crust-var: #11111b;
 }
 
 @theme {
@@ -112,30 +189,30 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Custom Mocha Colors for Tailwind Classes */
-  --color-rosewater: var(--mocha-rosewater);
-  --color-flamingo: var(--mocha-flamingo);
-  --color-pink: var(--mocha-pink);
-  --color-mauve: var(--mocha-mauve);
-  --color-red: var(--mocha-red);
-  --color-maroon: var(--mocha-maroon);
-  --color-peach: var(--mocha-peach);
-  --color-yellow: var(--mocha-yellow);
-  --color-green: var(--mocha-green);
-  --color-teal: var(--mocha-teal);
-  --color-sky: var(--mocha-sky);
-  --color-sapphire: var(--mocha-sapphire);
-  --color-blue: var(--mocha-blue);
-  --color-lavender: var(--mocha-lavender);
-  --color-text: var(--mocha-text);
-  --color-subtext1: var(--mocha-subtext1);
-  --color-subtext0: var(--mocha-subtext0);
-  --color-surface2: var(--mocha-surface2);
-  --color-surface1: var(--mocha-surface1);
-  --color-surface0: var(--mocha-surface0);
-  --color-base: var(--mocha-base);
-  --color-mantle: var(--mocha-mantle);
-  --color-crust: var(--mocha-crust);
+  /* Theme-Aware Custom Colors mapped to variables */
+  --color-rosewater: var(--color-rosewater-var);
+  --color-flamingo: var(--color-flamingo-var);
+  --color-pink: var(--color-pink-var);
+  --color-mauve: var(--color-mauve-var);
+  --color-red: var(--color-red-var);
+  --color-maroon: var(--color-maroon-var);
+  --color-peach: var(--color-peach-var);
+  --color-yellow: var(--color-yellow-var);
+  --color-green: var(--color-green-var);
+  --color-teal: var(--color-teal-var);
+  --color-sky: var(--color-sky-var);
+  --color-sapphire: var(--color-sapphire-var);
+  --color-blue: var(--color-blue-var);
+  --color-lavender: var(--color-lavender-var);
+  --color-text: var(--color-text-var);
+  --color-subtext1: var(--color-subtext1-var);
+  --color-subtext0: var(--color-subtext0-var);
+  --color-surface2: var(--color-surface2-var);
+  --color-surface1: var(--color-surface1-var);
+  --color-surface0: var(--color-surface0-var);
+  --color-base: var(--color-base-var);
+  --color-mantle: var(--color-mantle-var);
+  --color-crust: var(--color-crust-var);
 
   --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -153,10 +230,10 @@ body {
   font-family: var(--font-sans);
   background-color: var(--background);
   background: 
-    radial-gradient(1200px 700px at -10% -10%, rgba(203, 166, 247, 0.15), transparent 50%),
-    radial-gradient(1100px 600px at 110% -10%, rgba(137, 180, 250, 0.12), transparent 50%),
-    radial-gradient(800px 500px at 50% 110%, rgba(166, 227, 161, 0.08), transparent 50%),
-    #1e1e2e;
+    radial-gradient(1200px 700px at -10% -10%, var(--bg-gradient-1), transparent 50%),
+    radial-gradient(1100px 600px at 110% -10%, var(--bg-gradient-2), transparent 50%),
+    radial-gradient(800px 500px at 50% 110%, var(--bg-gradient-3), transparent 50%),
+    var(--bg-solid);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -164,8 +241,8 @@ body {
 
 /* Glassmorphism Classes */
 .glass-panel {
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  background: rgba(24, 24, 37, 0.65);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.05) inset,
     0 10px 30px -10px rgba(0, 0, 0, 0.5);
@@ -205,6 +282,7 @@ body {
   border-color: rgba(203, 166, 247, 0.2);
   box-shadow: 0 8px 30px -5px rgba(203, 166, 247, 0.1);
 }
+
 
 /* Custom Webkit scrollbars */
 ::-webkit-scrollbar {

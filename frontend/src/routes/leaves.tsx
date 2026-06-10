@@ -418,7 +418,7 @@ function LeavesComponent() {
                         <FormMessage>{field.state.meta.errors}</FormMessage>
                       </FormItem>
                     )}
-                  />
+                  </leaveForm.Field>
                   <leaveForm.Field name="endDate">
                     {(field: any) => (
                       <FormItem>
@@ -433,7 +433,7 @@ function LeavesComponent() {
                         <FormMessage>{field.state.meta.errors}</FormMessage>
                       </FormItem>
                     )}
-                  />
+                  </leaveForm.Field>
                 </div>
 
                 <leaveForm.Field name="leaveType">
@@ -455,7 +455,7 @@ function LeavesComponent() {
                       <FormMessage>{field.state.meta.errors}</FormMessage>
                     </FormItem>
                   )}
-                />
+                </leaveForm.Field>
 
                 <leaveForm.Field name="reason">
                   {(field: any) => (
@@ -474,7 +474,7 @@ function LeavesComponent() {
                       <FormMessage>{field.state.meta.errors}</FormMessage>
                     </FormItem>
                   )}
-                />
+                </leaveForm.Field>
 
                 <button
                   type="submit"
@@ -514,7 +514,7 @@ function LeavesComponent() {
                         <FormMessage>{field.state.meta.errors}</FormMessage>
                       </FormItem>
                     )}
-                  />
+                  </wfhForm.Field>
                   <wfhForm.Field name="endDate">
                     {(field: any) => (
                       <FormItem>
@@ -529,7 +529,7 @@ function LeavesComponent() {
                         <FormMessage>{field.state.meta.errors}</FormMessage>
                       </FormItem>
                     )}
-                  />
+                  </wfhForm.Field>
                 </div>
 
                 <wfhForm.Field name="reason">
@@ -549,7 +549,7 @@ function LeavesComponent() {
                       <FormMessage>{field.state.meta.errors}</FormMessage>
                     </FormItem>
                   )}
-                />
+                </wfhForm.Field>
 
                 <button
                   type="submit"
@@ -682,7 +682,7 @@ function LeavesComponent() {
                       <FormMessage>{field.state.meta.errors}</FormMessage>
                     </FormItem>
                   )}
-                />
+                </rejectionForm.Field>
 
                 <div className="flex justify-end gap-3 pt-4 border-t border-surface0/60">
                   <button

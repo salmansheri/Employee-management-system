@@ -11,10 +11,10 @@ import {
   ChevronLeft,
   User, 
   Building2,
-  Shield
+  Shield,
+  Settings
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { ChangePasswordDialog } from './ChangePasswordDialog';
 
 export function Sidebar() {
   const navigate = useNavigate();
@@ -94,6 +94,12 @@ export function Sidebar() {
           label="Task Board" 
           collapsed={sidebarCollapsed} 
         />
+        <SidebarLink 
+          to="/settings" 
+          icon={<Settings className="h-5 w-5" />} 
+          label="Settings" 
+          collapsed={sidebarCollapsed} 
+        />
       </nav>
 
       {/* Sidebar Footer User Session */}
@@ -120,8 +126,6 @@ export function Sidebar() {
             </motion.div>
           )}
         </div>
-
-        <ChangePasswordDialog collapsed={sidebarCollapsed} />
 
         <button
           onClick={handleLogout}

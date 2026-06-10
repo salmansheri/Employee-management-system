@@ -2,6 +2,7 @@ package dev.ems.backend.controller;
 
 import dev.ems.backend.dto.EmployeeDto;
 import dev.ems.backend.dto.RegisterRequest;
+import dev.ems.backend.dto.UpdateEmployeeRequest;
 import dev.ems.backend.mapper.EmployeeMapper;
 import dev.ems.backend.model.Employee;
 import dev.ems.backend.service.EmployeeService;
@@ -41,7 +42,7 @@ public class EmployeeController {
     @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
     public ResponseEntity<EmployeeDto> updateEmployee(
             @PathVariable UUID id,
-            @Valid @RequestBody RegisterRequest request,
+            @Valid @RequestBody UpdateEmployeeRequest request,
             @AuthenticationPrincipal Employee currentEmployee) {
         
         // Prevent non-admins from upgrading their own role or salary

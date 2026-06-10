@@ -33,9 +33,9 @@ public class AttendanceController {
 
     @GetMapping("/status")
     public ResponseEntity<AttendanceDto> getPunchStatus(@AuthenticationPrincipal Employee currentEmployee) {
-        return attendanceService.getActivePunch(currentEmployee.getId())
-                .map(attendance -> ResponseEntity.ok(attendanceMapper.toDto(attendance)))
-                .orElse(ResponseEntity.noContent().build());
+        return attendanceService.getTodayPunch(currentEmployee.getId())
+                 .map(attendance -> ResponseEntity.ok(attendanceMapper.toDto(attendance)))
+                 .orElse(ResponseEntity.noContent().build());
     }
 
     @PostMapping("/punch-in")

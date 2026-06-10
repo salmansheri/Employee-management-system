@@ -414,7 +414,7 @@ function TasksComponent() {
                       <FormMessage>{field.state.meta.errors}</FormMessage>
                     </FormItem>
                   )}
-                />
+                </createTaskForm.Field>
 
                 <createTaskForm.Field name="description">
                   {(field: any) => (
@@ -434,7 +434,7 @@ function TasksComponent() {
                       <FormMessage>{field.state.meta.errors}</FormMessage>
                     </FormItem>
                   )}
-                />
+                </createTaskForm.Field>
 
                 <createTaskForm.Field name="assignedToId">
                   {(field: any) => (
@@ -461,7 +461,7 @@ function TasksComponent() {
                       <FormMessage>{field.state.meta.errors}</FormMessage>
                     </FormItem>
                   )}
-                />
+                </createTaskForm.Field>
 
                 <div className="grid grid-cols-2 gap-4">
                   <createTaskForm.Field name="priority">
@@ -485,7 +485,7 @@ function TasksComponent() {
                         <FormMessage>{field.state.meta.errors}</FormMessage>
                       </FormItem>
                     )}
-                  />
+                  </createTaskForm.Field>
                   <createTaskForm.Field name="dueDate">
                     {(field: any) => (
                       <FormItem>
@@ -499,7 +499,7 @@ function TasksComponent() {
                         <FormMessage>{field.state.meta.errors}</FormMessage>
                       </FormItem>
                     )}
-                  />
+                  </createTaskForm.Field>
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4 border-t border-surface0/60">

@@ -57,11 +57,14 @@ function DashboardComponent() {
   const punchInMutation = usePunchInMutation();
   const punchOutMutation = usePunchOutMutation();
 
-  // Calculate dynamic ticking elapsed time when checked in
+  // Calculate dynamic ticking elapsed time when checked in or final elapsed time when checked out
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (punchStatus?.clockIn && !punchStatus?.clockOut) {
-      const start = new Date(punchStatus.clockIn).getTime();
+      const clockInStr = punchStatus.clockIn;
+      const start = new Date(
+        clockInStr.endsWith('Z') || clockInStr.includes('+') ? clockInStr : `${clockInStr}Z`
+      ).getTime();
       
       const updateTimer = () => {
         const now = new Date().getTime();
@@ -83,6 +86,25 @@ function DashboardComponent() {
 
       updateTimer();
       timer = setInterval(updateTimer, 1000);
+    } else if (punchStatus?.clockIn && punchStatus?.clockOut) {
+      const clockInStr = punchStatus.clockIn;
+      const clockOutStr = punchStatus.clockOut;
+      const start = new Date(
+        clockInStr.endsWith('Z') || clockInStr.includes('+') ? clockInStr : `${clockInStr}Z`
+      ).getTime();
+      const end = new Date(
+        clockOutStr.endsWith('Z') || clockOutStr.includes('+') ? clockOutStr : `${clockOutStr}Z`
+      ).getTime();
+      const diff = end - start;
+      
+      if (diff >= 0) {
+        const hrs = Math.floor(diff / (1000 * 60 * 60));
+        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const secs = Math.floor((diff % (1000 * 60)) / 1000);
+        setElapsedTime(
+          `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+        );
+      }
     } else {
       setElapsedTime('00:00:00');
     }
@@ -99,6 +121,7 @@ function DashboardComponent() {
   };
 
   const isPunchedIn = punchStatus?.clockIn && !punchStatus?.clockOut;
+  const isPunchedOut = punchStatus?.clockIn && punchStatus?.clockOut;
   const pendingTasks = tasks?.filter(t => t.status !== 'DONE') || [];
   const pendingLeaves = leaves?.filter(l => l.status === 'PENDING') || [];
 
@@ -126,7 +149,7 @@ function DashboardComponent() {
           <div>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-sm font-bold uppercase tracking-wider text-subtext1">Attendance Punch</h3>
-              <span className={`h-2.5 w-2.5 rounded-full ${isPunchedIn ? 'bg-green animate-pulse' : 'bg-red'}`} />
+              <span className={`h-2.5 w-2.5 rounded-full ${isPunchedIn ? 'bg-green animate-pulse' : isPunchedOut ? 'bg-blue' : 'bg-red'}`} />
             </div>
             
             <div className="flex flex-col items-center justify-center py-6">
@@ -135,14 +158,32 @@ function DashboardComponent() {
               </span>
               <p className="text-xs text-subtext0 mt-2">
                 {isPunchedIn 
-                  ? `Active session started at ${new Date(punchStatus.clockIn!).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-                  : 'No active session today'
+                  ? (() => {
+                      const clockInStr = punchStatus.clockIn!;
+                      const dateObj = new Date(
+                        clockInStr.endsWith('Z') || clockInStr.includes('+') ? clockInStr : `${clockInStr}Z`
+                      );
+                      return `Active session started at ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+                    })()
+                  : isPunchedOut
+                    ? (() => {
+                        const clockInStr = punchStatus.clockIn!;
+                        const clockOutStr = punchStatus.clockOut!;
+                        const inObj = new Date(
+                          clockInStr.endsWith('Z') || clockInStr.includes('+') ? clockInStr : `${clockInStr}Z`
+                        );
+                        const outObj = new Date(
+                          clockOutStr.endsWith('Z') || clockOutStr.includes('+') ? clockOutStr : `${clockOutStr}Z`
+                        );
+                        return `Session: ${inObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${outObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+                      })()
+                    : 'No active session today'
                 }
               </p>
             </div>
 
             {/* Location selector */}
-            {!isPunchedIn && (
+            {!isPunchedIn && !isPunchedOut && (
               <div className="space-y-2 mb-6">
                 <label className="text-xs font-semibold text-subtext1 uppercase tracking-wider flex items-center gap-1.5">
                   <MapPin className="h-3.5 w-3.5 text-mauve" />
@@ -176,6 +217,14 @@ function DashboardComponent() {
               >
                 <Square className="h-4.5 w-4.5 fill-crust" />
                 Punch Out
+              </button>
+            ) : isPunchedOut ? (
+              <button
+                disabled
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-surface0 text-subtext1/70 py-3 px-4 font-semibold border border-surface1/20 cursor-not-allowed"
+              >
+                <CheckSquare className="h-4.5 w-4.5 text-blue" />
+                Attendance Completed
               </button>
             ) : (
               <button
