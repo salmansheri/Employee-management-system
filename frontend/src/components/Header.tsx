@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useLocation } from '@tanstack/react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import { Clock, Bell } from 'lucide-react';
+import { Tooltip } from './ui/tooltip';
 import { 
   useNotificationsQuery, 
   useUnreadCountQuery, 
@@ -82,17 +83,19 @@ export function Header() {
 
         {/* Notifications bell */}
         <div className="relative" ref={notificationsRef}>
-          <button
-            onClick={() => setShowNotifications(!showNotifications)}
-            className="relative p-2 rounded-full bg-surface0/80 hover:bg-surface1 border border-surface1 hover:border-surface2 text-subtext0 hover:text-text transition-all cursor-pointer"
-          >
-            <Bell className="h-5 w-5" />
-            {unreadCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red text-[9px] font-bold text-crust animate-pulse">
-                {unreadCount}
-              </span>
-            )}
-          </button>
+          <Tooltip content="Notifications" side="bottom">
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="relative p-2 rounded-full bg-surface0/80 hover:bg-surface1 border border-surface1 hover:border-surface2 text-subtext0 hover:text-text transition-all cursor-pointer"
+            >
+              <Bell className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red text-[9px] font-bold text-crust animate-pulse">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+          </Tooltip>
 
           {/* Notifications Dropdown Panel */}
           <AnimatePresence>

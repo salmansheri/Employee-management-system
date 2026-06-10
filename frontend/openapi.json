@@ -381,7 +381,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegisterRequest"
+                "$ref": "#/components/schemas/UpdateEmployeeRequest"
               }
             }
           },
@@ -1648,7 +1648,7 @@
           "startDate"
         ]
       },
-      "RegisterRequest": {
+      "UpdateEmployeeRequest": {
         "type": "object",
         "properties": {
           "firstName": {
@@ -1703,8 +1703,7 @@
         "required": [
           "email",
           "firstName",
-          "lastName",
-          "password"
+          "lastName"
         ]
       },
       "EmployeeDto": {
@@ -1907,6 +1906,65 @@
           "employeeId",
           "feedback",
           "rating"
+        ]
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 2
+          },
+          "lastName": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 2
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "minLength": 1
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 6
+          },
+          "phone": {
+            "type": "string"
+          },
+          "jobTitle": {
+            "type": "string"
+          },
+          "departmentCode": {
+            "type": "string"
+          },
+          "managerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "salary": {
+            "type": "number"
+          },
+          "dateOfJoining": {
+            "type": "string",
+            "format": "date"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "ROLE_ADMIN",
+              "ROLE_MANAGER",
+              "ROLE_EMPLOYEE"
+            ]
+          }
+        },
+        "required": [
+          "email",
+          "firstName",
+          "lastName",
+          "password"
         ]
       },
       "LoginRequest": {

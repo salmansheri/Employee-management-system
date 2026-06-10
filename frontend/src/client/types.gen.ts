@@ -58,11 +58,11 @@ export type LeaveRequestDto = {
     updatedAt?: string;
 };
 
-export type RegisterRequest = {
+export type UpdateEmployeeRequest = {
     firstName: string;
     lastName: string;
     email: string;
-    password: string;
+    password?: string;
     phone?: string;
     jobTitle?: string;
     departmentCode?: string;
@@ -125,6 +125,20 @@ export type PerformanceReviewDto = {
     rating: number;
     createdAt?: string;
     updatedAt?: string;
+};
+
+export type RegisterRequest = {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    phone?: string;
+    jobTitle?: string;
+    departmentCode?: string;
+    managerId?: string;
+    salary?: number;
+    dateOfJoining?: string;
+    role?: 'ROLE_ADMIN' | 'ROLE_MANAGER' | 'ROLE_EMPLOYEE';
 };
 
 export type LoginRequest = {
@@ -378,7 +392,7 @@ export type GetEmployeeByIdResponses = {
 export type GetEmployeeByIdResponse = GetEmployeeByIdResponses[keyof GetEmployeeByIdResponses];
 
 export type UpdateEmployeeData = {
-    body: RegisterRequest;
+    body: UpdateEmployeeRequest;
     path: {
         id: string;
     };

@@ -24,6 +24,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { KanbanColumn } from '../components/KanbanColumn';
 import { DatePicker } from '../components/DatePicker';
 import { FormItem, FormLabel, FormControl, FormMessage } from '../components/ui/form';
+import { AlertDialog } from '../components/ui/alert-dialog';
+import { Tooltip } from '../components/ui/tooltip';
 import { z } from 'zod';
 
 const createTaskSchema = z.object({
@@ -41,6 +43,8 @@ export const Route = createFileRoute('/tasks')({
 function TasksComponent() {
   const [activeTab, setActiveTab] = useState<'my-board' | 'manage'>('my-board');
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [taskIdToDelete, setTaskIdToDelete] = useState<string | null>(null);
 
   const [formError, setFormError] = useState<string | null>(null);
   const [formLoading, setFormLoading] = useState(false);
@@ -119,19 +123,26 @@ function TasksComponent() {
     setFormError(null);
   };
 
-  const handleDeleteTask = async (id: string) => {
-    if (confirm('Are you sure you want to delete this task?')) {
-      console.log(`[Tasks Workspace] Deleting task ID: ${id}`);
-      try {
-        await deleteTaskMutation.mutateAsync({ path: { id } });
-        console.log('[Tasks Workspace] Task deleted successfully.');
-        toast.success('Task deleted successfully');
-      } catch (err: any) {
-        console.error('[Tasks Workspace] Task deletion failed:', err);
-        toast.error('Deletion failed', {
-          description: err.response?.data?.message || 'Failed to delete task.'
-        });
-      }
+  const handleDeleteTaskClick = (id: string) => {
+    setTaskIdToDelete(id);
+    setIsDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDeleteTask = async () => {
+    if (!taskIdToDelete) return;
+    console.log(`[Tasks Workspace] Deleting task ID: ${taskIdToDelete}`);
+    try {
+      await deleteTaskMutation.mutateAsync({ path: { id: taskIdToDelete } });
+      console.log('[Tasks Workspace] Task deleted successfully.');
+      toast.success('Task deleted successfully');
+    } catch (err: any) {
+      console.error('[Tasks Workspace] Task deletion failed:', err);
+      toast.error('Deletion failed', {
+        description: err.response?.data?.message || 'Failed to delete task.'
+      });
+    } finally {
+      setIsDeleteConfirmOpen(false);
+      setTaskIdToDelete(null);
     }
   };
 
@@ -251,6 +262,7 @@ function TasksComponent() {
                 status="TODO"
                 getPriorityColor={getPriorityColor}
                 onMove={moveTask}
+                mutatingTaskId={updateStatusMutation.isPending ? updateStatusMutation.variables?.path?.id : null}
               />
               <KanbanColumn 
                 title="In Progress" 
@@ -258,6 +270,7 @@ function TasksComponent() {
                 status="IN_PROGRESS"
                 getPriorityColor={getPriorityColor}
                 onMove={moveTask}
+                mutatingTaskId={updateStatusMutation.isPending ? updateStatusMutation.variables?.path?.id : null}
               />
               <KanbanColumn 
                 title="Reviewing" 
@@ -265,6 +278,7 @@ function TasksComponent() {
                 status="REVIEW"
                 getPriorityColor={getPriorityColor}
                 onMove={moveTask}
+                mutatingTaskId={updateStatusMutation.isPending ? updateStatusMutation.variables?.path?.id : null}
               />
               <KanbanColumn 
                 title="Completed" 
@@ -272,6 +286,7 @@ function TasksComponent() {
                 status="DONE"
                 getPriorityColor={getPriorityColor}
                 onMove={moveTask}
+                mutatingTaskId={updateStatusMutation.isPending ? updateStatusMutation.variables?.path?.id : null}
               />
             </div>
           )
@@ -334,13 +349,14 @@ function TasksComponent() {
                           </span>
                         </td>
                         <td className="py-3 pr-2 text-right">
-                          <button
-                            onClick={() => handleDeleteTask(task.id)}
-                            className="p-1 rounded-lg hover:bg-red/10 text-subtext0 hover:text-red transition-all cursor-pointer"
-                            title="Delete Task"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
+                          <Tooltip content="Delete Task" side="left">
+                            <button
+                              onClick={() => handleDeleteTaskClick(task.id)}
+                              className="p-1 rounded-lg hover:bg-red/10 text-subtext0 hover:text-red transition-all cursor-pointer"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </Tooltip>
                         </td>
                       </tr>
                     ))}
@@ -524,6 +540,20 @@ function TasksComponent() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* TASK DELETION ALERT DIALOG */}
+      <AlertDialog
+        isOpen={isDeleteConfirmOpen}
+        title="Delete Task"
+        description="Are you sure you want to delete this task? This action is permanent and cannot be undone."
+        confirmText="Delete"
+        onCancel={() => {
+          setIsDeleteConfirmOpen(false);
+          setTaskIdToDelete(null);
+        }}
+        onConfirm={handleConfirmDeleteTask}
+      />
+
     </div>
   );
 }

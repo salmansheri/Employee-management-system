@@ -20,7 +20,8 @@ import {
   ArrowRight,
   Users,
   TrendingUp,
-  Activity
+  Activity,
+  Loader2
 } from 'lucide-react';
 
 export const Route = createFileRoute('/')({
@@ -215,8 +216,12 @@ function DashboardComponent() {
                 disabled={punchOutMutation.isPending}
                 className="w-full flex items-center justify-center gap-2 rounded-xl bg-red hover:bg-red/90 text-crust py-3 px-4 font-semibold shadow-lg shadow-red/15 transition-all cursor-pointer disabled:opacity-50"
               >
-                <Square className="h-4.5 w-4.5 fill-crust" />
-                Punch Out
+                {punchOutMutation.isPending ? (
+                  <Loader2 className="h-4.5 w-4.5 animate-spin" />
+                ) : (
+                  <Square className="h-4.5 w-4.5 fill-crust" />
+                )}
+                {punchOutMutation.isPending ? 'Punching Out...' : 'Punch Out'}
               </button>
             ) : isPunchedOut ? (
               <button
@@ -232,8 +237,12 @@ function DashboardComponent() {
                 disabled={punchInMutation.isPending}
                 className="w-full flex items-center justify-center gap-2 rounded-xl bg-green hover:bg-green/90 text-crust py-3 px-4 font-semibold shadow-lg shadow-green/15 transition-all cursor-pointer disabled:opacity-50"
               >
-                <Play className="h-4.5 w-4.5 fill-crust" />
-                Punch In ({workLocation})
+                {punchInMutation.isPending ? (
+                  <Loader2 className="h-4.5 w-4.5 animate-spin" />
+                ) : (
+                  <Play className="h-4.5 w-4.5 fill-crust" />
+                )}
+                {punchInMutation.isPending ? 'Punching In...' : `Punch In (${workLocation})`}
               </button>
             )}
           </div>

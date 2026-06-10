@@ -26,6 +26,7 @@ import { RequestListItem } from '../components/RequestListItem';
 import { ApprovalItem } from '../components/ApprovalItem';
 import { DatePicker } from '../components/DatePicker';
 import { FormItem, FormLabel, FormControl, FormMessage } from '../components/ui/form';
+import { AlertDialog } from '../components/ui/alert-dialog';
 import { z } from 'zod';
 import { toast } from 'sonner';
 
@@ -56,6 +57,10 @@ function LeavesComponent() {
   
   // Rejection modal state
   const [rejectionTarget, setRejectionTarget] = useState<{ id: string; type: 'LEAVE' | 'WFH' } | null>(null);
+
+  // Approval confirmation modal state
+  const [isApproveConfirmOpen, setIsApproveConfirmOpen] = useState(false);
+  const [approveTarget, setApproveTarget] = useState<{ id: string; type: 'LEAVE' | 'WFH' } | null>(null);
 
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
@@ -207,25 +212,33 @@ function LeavesComponent() {
     }
   });
 
-  const handleApprove = async (id: string, type: 'LEAVE' | 'WFH') => {
-    if (confirm(`Approve this ${type.toLowerCase()} request?`)) {
-      console.log(`[Approval Tray] Manager approving request ID ${id} (Type: ${type})`);
-      try {
-        if (type === 'LEAVE') {
-          await approveLeaveMutation.mutateAsync({ path: { id } });
-        } else {
-          await approveWfhMutation.mutateAsync({ path: { id } });
-        }
-        console.log('[Approval Tray] Approval processed successfully.');
-        toast.success('Request approved', {
-          description: `The ${type.toLowerCase()} request was marked as approved.`
-        });
-      } catch (err: any) {
-        console.error('[Approval Tray] Approval failed:', err);
-        toast.error('Approval failed', {
-          description: err.response?.data?.message || err.message || 'Error occurred.'
-        });
+  const handleApproveClick = (id: string, type: 'LEAVE' | 'WFH') => {
+    setApproveTarget({ id, type });
+    setIsApproveConfirmOpen(true);
+  };
+
+  const handleConfirmApprove = async () => {
+    if (!approveTarget) return;
+    const { id, type } = approveTarget;
+    console.log(`[Approval Tray] Manager approving request ID ${id} (Type: ${type})`);
+    try {
+      if (type === 'LEAVE') {
+        await approveLeaveMutation.mutateAsync({ path: { id } });
+      } else {
+        await approveWfhMutation.mutateAsync({ path: { id } });
       }
+      console.log('[Approval Tray] Approval processed successfully.');
+      toast.success('Request approved', {
+        description: `The ${type.toLowerCase()} request was marked as approved.`
+      });
+    } catch (err: any) {
+      console.error('[Approval Tray] Approval failed:', err);
+      toast.error('Approval failed', {
+        description: err.response?.data?.message || err.message || 'Error occurred.'
+      });
+    } finally {
+      setIsApproveConfirmOpen(false);
+      setApproveTarget(null);
     }
   };
 
@@ -586,7 +599,7 @@ function LeavesComponent() {
                       key={request.id}
                       request={request}
                       type="LEAVE"
-                      onApprove={() => handleApprove(request.id, 'LEAVE')}
+                      onApprove={() => handleApproveClick(request.id, 'LEAVE')}
                       onReject={() => setRejectionTarget({ id: request.id, type: 'LEAVE' })}
                     />
                   ))}
@@ -612,7 +625,7 @@ function LeavesComponent() {
                       key={request.id}
                       request={request}
                       type="WFH"
-                      onApprove={() => handleApprove(request.id, 'WFH')}
+                      onApprove={() => handleApproveClick(request.id, 'WFH')}
                       onReject={() => setRejectionTarget({ id: request.id, type: 'WFH' })}
                     />
                   ))}
@@ -707,6 +720,20 @@ function LeavesComponent() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* APPROVAL CONFIRMATION ALERT DIALOG */}
+      <AlertDialog
+        isOpen={isApproveConfirmOpen}
+        title="Approve Request"
+        description={`Are you sure you want to approve this ${approveTarget?.type.toLowerCase() || 'request'} request?`}
+        confirmText="Approve"
+        onCancel={() => {
+          setIsApproveConfirmOpen(false);
+          setApproveTarget(null);
+        }}
+        onConfirm={handleConfirmApprove}
+      />
+
     </div>
   );
 }

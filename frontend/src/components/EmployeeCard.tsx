@@ -1,5 +1,6 @@
 import { Mail, Phone, Shield, Edit, Trash2, Building2, Briefcase } from 'lucide-react';
 import type { EmployeeDto } from '../client/types.gen';
+import { Tooltip } from './ui/tooltip';
 
 interface EmployeeCardProps {
   emp: EmployeeDto;
@@ -89,21 +90,23 @@ export function EmployeeCard({
 
         {hasEditPrivilege && (
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => onEditClick(emp)}
-              className="p-1.5 rounded-lg hover:bg-surface0 hover:text-blue text-subtext0 transition-all cursor-pointer"
-              title="Edit Profile"
-            >
-              <Edit className="h-4 w-4" />
-            </button>
-            {emp.id !== me?.id && emp.id && (
+            <Tooltip content="Edit Employee Profile" side="top">
               <button
-                onClick={() => onDeleteClick(emp.id!)}
-                className="p-1.5 rounded-lg hover:bg-red/10 hover:text-red text-subtext0 transition-all cursor-pointer"
-                title="Delete Record"
+                onClick={() => onEditClick(emp)}
+                className="p-1.5 rounded-lg hover:bg-surface0 hover:text-blue text-subtext0 transition-all cursor-pointer"
               >
-                <Trash2 className="h-4 w-4" />
+                <Edit className="h-4 w-4" />
               </button>
+            </Tooltip>
+            {emp.id !== me?.id && emp.id && (
+              <Tooltip content="Delete Employee Record" side="top">
+                <button
+                  onClick={() => onDeleteClick(emp.id!)}
+                  className="p-1.5 rounded-lg hover:bg-red/10 hover:text-red text-subtext0 transition-all cursor-pointer"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </Tooltip>
             )}
           </div>
         )}

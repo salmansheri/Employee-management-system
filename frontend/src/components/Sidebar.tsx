@@ -34,6 +34,10 @@ export function Sidebar() {
     navigate({ to: '/login' });
   };
 
+  const isAdmin = profile?.role === 'ROLE_ADMIN' || user?.role === 'ROLE_ADMIN';
+  const isManager = profile?.role === 'ROLE_MANAGER' || user?.role === 'ROLE_MANAGER';
+  const canViewEmployees = isAdmin || isManager;
+
   return (
     <motion.aside
       initial={false}
@@ -76,12 +80,14 @@ export function Sidebar() {
           label="Dashboard" 
           collapsed={sidebarCollapsed} 
         />
-        <SidebarLink 
-          to="/employees" 
-          icon={<Users className="h-5 w-5" />} 
-          label="Employees" 
-          collapsed={sidebarCollapsed} 
-        />
+        {canViewEmployees && (
+          <SidebarLink 
+            to="/employees" 
+            icon={<Users className="h-5 w-5" />} 
+            label="Employees" 
+            collapsed={sidebarCollapsed} 
+          />
+        )}
         <SidebarLink 
           to="/leaves" 
           icon={<CalendarDays className="h-5 w-5" />} 

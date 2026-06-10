@@ -74,12 +74,26 @@ export const FormMessage = React.forwardRef<
     children?: React.ReactNode | any[]
   }
 >(({ className, children, ...props }, ref) => {
-  // TanStack Form returns errors as an array or a single string
-  const errorMsg = Array.isArray(children)
-    ? children.join(", ")
-    : typeof children === "string"
-    ? children
-    : children?.toString() || ""
+  // Extract error message string safely
+  const getErrorMessage = (err: any): string => {
+    if (!err) return "";
+    if (typeof err === "string") return err;
+    if (typeof err === "object") {
+      if (err.message) return err.message;
+      return JSON.stringify(err);
+    }
+    return String(err);
+  };
+
+  let errorMsg = "";
+  if (Array.isArray(children)) {
+    errorMsg = children
+      .map((child) => getErrorMessage(child))
+      .filter(Boolean)
+      .join(", ");
+  } else {
+    errorMsg = getErrorMessage(children);
+  }
 
   if (!errorMsg) {
     return null

@@ -11,12 +11,14 @@ import {
 import { 
   Search, 
   UserPlus, 
-  Loader2
+  Loader2,
+  ShieldAlert
 } from 'lucide-react';
 import { EmployeeCard } from '../components/EmployeeCard';
 import { EmployeeDetailsModal } from '../components/EmployeeDetailsModal';
 import { CreateEmployeeModal } from '../components/CreateEmployeeModal';
 import { EditEmployeeModal } from '../components/EditEmployeeModal';
+import { AlertDialog } from '../components/ui/alert-dialog';
 import type { EmployeeDto, RegisterRequest } from '../client/types.gen';
 import { toast } from 'sonner';
 
@@ -33,14 +35,16 @@ function EmployeesComponent() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   
   // Selected Employee records
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeDto | null>(null);
+  const [employeeIdToDelete, setEmployeeIdToDelete] = useState<string | null>(null);
   
   const [formLoading, setFormLoading] = useState(false);
 
   // Fetch logged in profile via hook
-  const { data: me } = useMeQuery();
+  const { data: me, isLoading: loadingMe } = useMeQuery();
 
   // Fetch all employees via hook
   const { data: employees, isLoading: loadingEmployees } = useEmployeesQuery();
@@ -57,6 +61,33 @@ function EmployeesComponent() {
   const isAdmin = me?.role === 'ROLE_ADMIN';
   const isManager = me?.role === 'ROLE_MANAGER';
   const hasEditPrivilege = isAdmin || isManager;
+
+  if (loadingMe) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-mauve" />
+          <span className="text-sm text-subtext0">Checking authorization...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasEditPrivilege) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[70vh] space-y-4">
+        <div className="p-4 rounded-full bg-red/10 text-red animate-pulse">
+          <ShieldAlert className="h-12 w-12" />
+        </div>
+        <div className="text-center space-y-1">
+          <h3 className="text-lg font-bold text-text">Access Denied</h3>
+          <p className="text-sm text-subtext0 max-w-sm">
+            You do not have the required permissions to view the employee directory.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const handleCreateSubmit = async (values: RegisterRequest) => {
     setFormLoading(true);
@@ -109,21 +140,28 @@ function EmployeesComponent() {
     setIsEditOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this employee record?')) {
-      console.log(`[Employee Directory] Deletion requested for employee ID: ${id}`);
-      try {
-        await deleteMutation.mutateAsync({ path: { id } });
-        console.log('[Employee Directory] Employee record deleted successfully.');
-        toast.success('Employee record deleted', {
-          description: 'Employee profile was removed from database.'
-        });
-      } catch (err: any) {
-        console.error('[Employee Directory] Deletion failed:', err);
-        toast.error('Deletion failed', {
-          description: err.response?.data?.message || err.message || 'Error occurred.'
-        });
-      }
+  const handleDeleteClick = (id: string) => {
+    setEmployeeIdToDelete(id);
+    setIsDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!employeeIdToDelete) return;
+    console.log(`[Employee Directory] Deletion requested for employee ID: ${employeeIdToDelete}`);
+    try {
+      await deleteMutation.mutateAsync({ path: { id: employeeIdToDelete } });
+      console.log('[Employee Directory] Employee record deleted successfully.');
+      toast.success('Employee record deleted', {
+        description: 'Employee profile was removed from database.'
+      });
+    } catch (err: any) {
+      console.error('[Employee Directory] Deletion failed:', err);
+      toast.error('Deletion failed', {
+        description: err.response?.data?.message || err.message || 'Error occurred.'
+      });
+    } finally {
+      setIsDeleteConfirmOpen(false);
+      setEmployeeIdToDelete(null);
     }
   };
 
@@ -224,7 +262,7 @@ function EmployeesComponent() {
                 setIsDetailsOpen(true);
               }}
               onEditClick={openEditModal}
-              onDeleteClick={handleDelete}
+              onDeleteClick={handleDeleteClick}
             />
           ))}
         </div>
@@ -271,6 +309,19 @@ function EmployeesComponent() {
         isAdmin={isAdmin}
         hasEditPrivilege={hasEditPrivilege}
         onEditClick={openEditModal}
+      />
+
+      {/* DELETE CONFIRMATION ALERT DIALOG */}
+      <AlertDialog
+        isOpen={isDeleteConfirmOpen}
+        title="Delete Employee Record"
+        description="Are you sure you want to delete this employee record? This action is permanent and cannot be undone."
+        confirmText="Delete"
+        onCancel={() => {
+          setIsDeleteConfirmOpen(false);
+          setEmployeeIdToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
       />
 
     </div>
